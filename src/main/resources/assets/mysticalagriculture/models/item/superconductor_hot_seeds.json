@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "auralithutilities:item/seeds/superconductor_hot_seeds"
+  }
+}

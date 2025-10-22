@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "auralithutilities:item/essence/chromium_hot_essence"
+  }
+}

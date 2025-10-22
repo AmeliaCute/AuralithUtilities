@@ -1,0 +1,63 @@
+{
+  "type": "mysticalagriculture:infusion",
+  "neoforge:conditions": [
+    {
+      "type": "mysticalagriculture:crop_enabled",
+      "crop": "auralithutilities:superconductor_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_has_material",
+      "crop": "auralithutilities:superconductor_hot"
+    }
+  ],
+  "input": {
+    "type": "mysticalagriculture:crop_component",
+    "component": "seed",
+    "crop": "auralithutilities:superconductor_hot"
+  },
+  "ingredients": [
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:superconductor_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:superconductor_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:superconductor_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:superconductor_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:superconductor_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:superconductor_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:superconductor_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:superconductor_hot"
+    }
+  ],
+  "result": {
+    "id": "mysticalagriculture:superconductor_hot_seeds"
+  }
+}

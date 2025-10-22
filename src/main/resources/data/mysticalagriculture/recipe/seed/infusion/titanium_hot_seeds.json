@@ -1,0 +1,63 @@
+{
+  "type": "mysticalagriculture:infusion",
+  "neoforge:conditions": [
+    {
+      "type": "mysticalagriculture:crop_enabled",
+      "crop": "auralithutilities:titanium_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_has_material",
+      "crop": "auralithutilities:titanium_hot"
+    }
+  ],
+  "input": {
+    "type": "mysticalagriculture:crop_component",
+    "component": "seed",
+    "crop": "auralithutilities:titanium_hot"
+  },
+  "ingredients": [
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:titanium_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:titanium_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:titanium_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:titanium_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:titanium_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:titanium_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:titanium_hot"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:titanium_hot"
+    }
+  ],
+  "result": {
+    "id": "mysticalagriculture:titanium_hot_seeds"
+  }
+}

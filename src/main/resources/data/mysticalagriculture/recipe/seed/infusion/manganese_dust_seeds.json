@@ -1,0 +1,63 @@
+{
+  "type": "mysticalagriculture:infusion",
+  "neoforge:conditions": [
+    {
+      "type": "mysticalagriculture:crop_enabled",
+      "crop": "auralithutilities:manganese_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_has_material",
+      "crop": "auralithutilities:manganese_dust"
+    }
+  ],
+  "input": {
+    "type": "mysticalagriculture:crop_component",
+    "component": "seed",
+    "crop": "auralithutilities:manganese_dust"
+  },
+  "ingredients": [
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:manganese_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:manganese_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:manganese_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:manganese_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:manganese_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:manganese_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:manganese_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:manganese_dust"
+    }
+  ],
+  "result": {
+    "id": "mysticalagriculture:manganese_dust_seeds"
+  }
+}
