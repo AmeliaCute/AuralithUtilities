@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "gg.amecute.auralithutilities.mixin",
+  "package": "gg.amecute.auralithutilities.Mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "injectors": {
