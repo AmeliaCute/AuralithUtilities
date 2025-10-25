@@ -140,7 +140,8 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_authors                 : mod_authors,
             mod_description             : mod_description,
             mi_version                  : mi_version,
-            botanypotmystical_version   : botanypotmystical_version
+            botanypotmystical_version   : botanypotmystical_version,
+            mysticalagradditions_version: mysticalagradditions_version,
     ]
     inputs.properties replaceProperties
     expand replaceProperties
