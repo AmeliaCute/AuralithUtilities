@@ -37,7 +37,7 @@ jobs:
           echo "{tag}=$DATE_TAG"
 
       - name: Upload to Modrinth
-        uses: cloudenode-pro/modrinth-publish@v2
+        uses: cloudnode-pro/modrinth-publish@v2
         with:
           token: ${{ secrets.MODRINTH_TOKEN }}
           project: jx0u7UEL
