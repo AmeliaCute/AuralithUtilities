@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Set up date-based tag
+        run: |
+          DATE_TAG="v$(date +'%Y%m%d.%H%M')"
+          echo "TAG_NAME=$DATE_TAG" >> $GITHUB_ENV
+          echo "{tag}=$DATE_TAG"
+
+      - name: Upload to Modrinth
+        uses: cloudenode-pro/modrinth-publish@v2
+        with:
+          token: ${{ secrets.MODRINTH_TOKEN }}
+          project: jx0u7UEL
+          name: auralith-compat-and-additions-${{ env.TAG_NAME }}
+          version: ${{ env.TAG_NAME }}
+          loaders: |-
+            neoforge
+          game-versions: |-
+            1.21.1
+          files: build/libs/auralithutilities-1.0.0.jar

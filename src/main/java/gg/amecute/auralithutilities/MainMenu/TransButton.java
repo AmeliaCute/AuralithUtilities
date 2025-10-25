@@ -6,7 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class AuralithButton extends Button
+public class TransButton extends Button
 {
     private static final int LUNAR_BLUE = 0x4A90E2;
     private static final int LUNAR_BLUE_HOVER = 0x5BA3F5;
@@ -14,7 +14,7 @@ public class AuralithButton extends Button
 
     private final Minecraft minecraft;
 
-    public AuralithButton(int x, int y, int width, int height, Component message, OnPress onPress)
+    public TransButton(int x, int y, int width, int height, Component message, OnPress onPress)
     {
         super(x,y,width,height,message,onPress,DEFAULT_NARRATION);
         minecraft = Minecraft.getInstance();
@@ -74,9 +74,9 @@ public class AuralithButton extends Button
         }
 
 
-        public AuralithButton build()
+        public TransButton build()
         {
-            return new AuralithButton(x, y, width, height, message, onPress);
+            return new TransButton(x, y, width, height, message, onPress);
         }
     }
 

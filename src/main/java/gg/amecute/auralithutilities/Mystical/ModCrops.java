@@ -34,6 +34,9 @@ public final class ModCrops
     public static final Crop MANGANESE_DUST =
             new Crop(AuralithUtilities.resGet("manganese_dust"), CropTier.FOUR, CropType.RESOURCE, LazyIngredient.item("modern_industrialization:manganese_dust"));
 
+    public static final Crop BAUXITE_DUST =
+            new Crop(AuralithUtilities.resGet("bauxite_dust"), CropTier.FOUR, CropType.RESOURCE, LazyIngredient.item("modern_industrialization:bauxite_dust"));
+
     public static void onRegisterCrops(ICropRegistry registry)
     {
         registry.register(withRequiredMods(ANTIMONY, "modern_industrialization"));
@@ -45,7 +48,7 @@ public final class ModCrops
         registry.register(withRequiredMods(TITANIUM_HOT, "modern_industrialization"));
 
         registry.register(withRequiredMods(MANGANESE_DUST, "modern_industrialization"));
-
+        registry.register(withRequiredMods(BAUXITE_DUST, "modern_industrialization"));
     }
 
     private static Crop withRequiredMods(Crop crop, String... mods)

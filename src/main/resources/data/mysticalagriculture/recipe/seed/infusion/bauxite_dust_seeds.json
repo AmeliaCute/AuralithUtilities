@@ -1,0 +1,63 @@
+{
+  "type": "mysticalagriculture:infusion",
+  "neoforge:conditions": [
+    {
+      "type": "mysticalagriculture:crop_enabled",
+      "crop": "auralithutilities:bauxite_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_has_material",
+      "crop": "auralithutilities:bauxite_dust"
+    }
+  ],
+  "input": {
+    "type": "mysticalagriculture:crop_component",
+    "component": "seed",
+    "crop": "auralithutilities:bauxite_dust"
+  },
+  "ingredients": [
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:bauxite_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:bauxite_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:bauxite_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:bauxite_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:bauxite_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:bauxite_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "material",
+      "crop": "auralithutilities:bauxite_dust"
+    },
+    {
+      "type": "mysticalagriculture:crop_component",
+      "component": "essence",
+      "crop": "auralithutilities:bauxite_dust"
+    }
+  ],
+  "result": {
+    "id": "mysticalagriculture:bauxite_dust_seeds"
+  }
+}

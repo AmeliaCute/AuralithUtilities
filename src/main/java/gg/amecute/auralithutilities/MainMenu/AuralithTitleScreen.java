@@ -1,5 +1,6 @@
 package gg.amecute.auralithutilities.MainMenu;
 
+import com.google.gson.Gson;
 import gg.amecute.auralithutilities.AuralithUtilities;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,53 +15,87 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.gui.ModListScreen;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 public class AuralithTitleScreen extends Screen
 {
     private final PanoramaRenderer panorama = new PanoramaRenderer(TitleScreen.CUBE_MAP);
     private final ResourceLocation icon = ResourceLocation.fromNamespaceAndPath(AuralithUtilities.MODID, "textures/ui/title.png");
+    private final ResourceLocation splash = ResourceLocation.fromNamespaceAndPath(AuralithUtilities.MODID, "lang/auralith.json");
+
+    private static final Random random = new Random();
+    private static List<String> splashList;
+    private static String currentString;
 
     public AuralithTitleScreen()
     {
         super(Component.literal("Auralith Main Menu"));
     }
 
+    private void loadSplash()
+    {
+        try {
+            InputStream stream  = this.minecraft.getResourceManager().getResource(splash).orElseThrow().open();
+            InputStreamReader reader = new InputStreamReader(stream);
+
+            Gson gson = new Gson();
+
+            String[] strings = gson.fromJson(reader, String[].class);
+            splashList = Arrays.stream(strings).toList();
+
+            reader.close();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     protected void init()
     {
-        int spacing = 24;
-
-        int centerX = this.width / 16 * 9;
-        int startY = this.height / 9 * 3;
-
         assert this.minecraft != null;
+        if(splashList == null)
+            loadSplash();
 
-        this.addRenderableWidget(AuralithButton.araBuilder(
+        currentString = splashList.get(random.nextInt(splashList.size()));
+
+        int spacing = 20;
+        int centerX = this.width / 2 - 100;
+        int startY = this.height / 9 * 3 + 15;
+
+
+        this.addRenderableWidget(TransButton.araBuilder(
                 Component.translatable("menu.singleplayer"),
                 button -> {
                     this.minecraft.setScreen(new SelectWorldScreen(this));
                 }
         ).bounds(centerX, startY).build());
 
-        this.addRenderableWidget(AuralithButton.araBuilder(
+        this.addRenderableWidget(TransButton.araBuilder(
                 Component.translatable("menu.multiplayer"),
                 button -> {
                     this.minecraft.setScreen(new JoinMultiplayerScreen(this));
                 }
         ).bounds(centerX, startY + spacing).build());
 
-        this.addRenderableWidget(AuralithButton.araBuilder(
+        this.addRenderableWidget(TransButton.araBuilder(
                 Component.translatable("menu.options"),
                 button -> {
                     this.minecraft.setScreen(new OptionsScreen(this, this.minecraft.options));
                 }
         ).bounds(centerX, startY + spacing * 2).build());
 
-        this.addRenderableWidget(AuralithButton.araBuilder(
+        this.addRenderableWidget(TransButton.araBuilder(
                 Component.translatable("fml.menu.mods"),
                 button -> this.minecraft.setScreen(new ModListScreen(this))
         ).bounds(centerX, startY + spacing * 3).build());
 
-        this.addRenderableWidget(AuralithButton.araBuilder(
+        this.addRenderableWidget(TransButton.araBuilder(
                 Component.translatable("menu.quit"),
                 button -> {
                     this.minecraft.stop();
@@ -75,7 +110,9 @@ public class AuralithTitleScreen extends Screen
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         assert this.minecraft != null;
-        guiGraphics.blit(icon,  this.width / 16 * 2, this.height / 9 * 3, 0f, 0f, 204, 64, 204, 64);
+        guiGraphics.blit(icon,  this.width / 2 - (204 / 2), this.height / 9, 0f, 0f, 204, 65, 204, 65);
+
+        guiGraphics.drawCenteredString(this.font, currentString,this.width / 2, this.height / 9 * 8, 0xFFFFFFFF);
         guiGraphics.drawString(this.font, "NeoForge "+ this.minecraft.getLaunchedVersion() + " (" + ModList.get().size() + " Mods)", 2, this.height - 10, 0xFFFFFF);
     }
 }
