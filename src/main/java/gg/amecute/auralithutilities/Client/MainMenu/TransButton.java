@@ -1,4 +1,4 @@
-package gg.amecute.auralithutilities.MainMenu;
+package gg.amecute.auralithutilities.Client.MainMenu;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

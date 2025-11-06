@@ -1,4 +1,4 @@
-package gg.amecute.auralithutilities.Mystical;
+package gg.amecute.auralithutilities.Registries;
 
 import com.blakebr0.mysticalagradditions.lib.ModCropTiers;
 import com.blakebr0.mysticalagriculture.api.crop.Crop;
@@ -11,7 +11,7 @@ import net.neoforged.fml.ModList;
 
 import java.util.Arrays;
 
-public final class ModCrops
+public final class MysticalCrops
 {
     public static final Crop ANTIMONY =
             new Crop(AuralithUtilities.resGet("antimony"), CropTier.FOUR, CropType.RESOURCE, LazyIngredient.item("modern_industrialization:antimony_ingot"));
