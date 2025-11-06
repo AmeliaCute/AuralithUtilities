@@ -95,10 +95,10 @@ public class BlackHoleEntity extends Entity
     public void applyGravitationalPull()
     {
         float pullRadius  = getSize() * 5.0f;
-        float pullStrengh = mass;
+        float pullStrengh = mass / 50.0f;
 
         level().getEntities(this, getBoundingBox().inflate(pullRadius),
-                entity -> entity != this && (!entity.isSpectator())).forEach(
+                entity -> entity != this && !entity.isSpectator()).forEach(
                 entity ->
                 {
                     Vec3 toBlackHole = this.position().subtract(entity.position());

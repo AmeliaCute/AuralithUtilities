@@ -27,6 +27,14 @@ repositories {
         }
     }
 
+    maven {
+        url = "https://api.modrinth.com/maven"
+    }
+
+    maven {
+        url = "https://squiddev.cc/maven"
+    }
+
 }
 
 base {
@@ -125,6 +133,8 @@ dependencies {
 
     runtimeOnly    "net.darkhax.botanypots:botanypots-neoforge-${minecraft_version}:${botanypot_version}"
     runtimeOnly    "net.darkhax.botanypotsmystical:botanypotsmystical-neoforge-${minecraft_version}:${botanypotmystical_version}"
+
+
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

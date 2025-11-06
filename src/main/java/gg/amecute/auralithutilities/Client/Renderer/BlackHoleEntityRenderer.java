@@ -43,7 +43,7 @@ public class BlackHoleEntityRenderer extends EntityRenderer<BlackHoleEntity>
         Matrix4f pose = poseStack.last().pose();
         Matrix3f normal = poseStack.last().normal();
 
-        int segments = 32;
+        int segments = 16;
         int rings = 16;
 
         for(int ring = 0; ring < rings; ++ring)
