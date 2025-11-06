@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import gg.amecute.auralithutilities.Client.Shaders.BlackHoleRenderType;
 import gg.amecute.auralithutilities.Entity.BlackHoleEntity;
+import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -13,6 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+
+import javax.swing.text.html.parser.Entity;
 
 public class BlackHoleEntityRenderer extends EntityRenderer<BlackHoleEntity>
 {

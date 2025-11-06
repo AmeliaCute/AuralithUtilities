@@ -7,6 +7,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -102,15 +103,19 @@ public class BlackHoleEntity extends Entity
                 entity ->
                 {
                     Vec3 toBlackHole = this.position().subtract(entity.position());
-                    double distance = toBlackHole.length();
+                    double distance = Math.max(toBlackHole.length(), 0.2); // min distance = 0.2 to prevent division by 0
+                    Vec3 direction = toBlackHole.normalize();
+                    double force = pullStrengh / (distance * distance);
+                    Vec3 pullVelocity = direction.scale(force * 0.5);
 
-                    if(distance > 0.5)
+                    if(entity instanceof Player player)
                     {
-                        double force = pullStrengh / (distance * distance);
-                        Vec3 pullVelocity = toBlackHole.normalize().scale(force * 0.1f);
-
-                        entity.setDeltaMovement(entity.getDeltaMovement().add(pullVelocity));
+                        Vec3 newVel = player.getDeltaMovement().add(pullVelocity);
+                        player.setDeltaMovement(newVel);
+                        player.hurtMarked = true;
                     }
+                    else
+                        entity.setDeltaMovement(entity.getDeltaMovement().add(pullVelocity));
                 }
         );
     }
@@ -140,7 +145,7 @@ public class BlackHoleEntity extends Entity
 
     public void setSize(float size)
     {
-        this.entityData.set(DATA_SIZE, Math.max(0.5f, Math.min(25.0f, size)));
+        this.entityData.set(DATA_SIZE, Math.max(0.1f, Math.min(25.0f, size)));
         this.refreshDimensions();
     }
 
