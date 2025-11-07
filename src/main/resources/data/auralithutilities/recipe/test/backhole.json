@@ -1,0 +1,11 @@
+{
+  "type": "modern_industrialization:assembler",
+  "eu": 1024,
+  "duration": 200,
+  "item_inputs": [
+    { "item": "minecraft:diamond", "count": 1 }
+  ],
+  "item_outputs": [
+    { "item": "minecraft:nether_star", "count": 1 }
+  ]
+}

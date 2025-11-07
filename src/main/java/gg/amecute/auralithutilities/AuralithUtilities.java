@@ -3,6 +3,7 @@ package gg.amecute.auralithutilities;
 import gg.amecute.auralithutilities.Event.MainMenuReplacer;
 import gg.amecute.auralithutilities.Registries.AuralithEntities;
 import gg.amecute.auralithutilities.Registries.AuralithItems;
+import gg.amecute.auralithutilities.Registries.AuralithMachines;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -28,6 +29,9 @@ public class AuralithUtilities
 
         AuralithEntities.ENTITY_TYPE.register(modEventBus);
         AuralithItems.ITEMS.register(modEventBus);
+
+        AuralithMachines.BLOCKS.register(modEventBus);
+        AuralithMachines.registerBlockEntities();
 
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);

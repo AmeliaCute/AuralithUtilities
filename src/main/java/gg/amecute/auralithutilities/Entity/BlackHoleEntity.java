@@ -20,7 +20,7 @@ public class BlackHoleEntity extends Entity
     private static final EntityDataAccessor<Float>   DATA_SIZE   = SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> DATA_STABLE = SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private boolean controlled = false;
+    private boolean controlled  = false;
     private float   mass        = 100.0f;
     private Long    age         = 0L;
     private float   temperature = 1.0f;
@@ -198,4 +198,5 @@ public class BlackHoleEntity extends Entity
     {
         this.spinRate = Math.max(0.0f, Math.min(5.0f, spinRate));
     }
+
 }
