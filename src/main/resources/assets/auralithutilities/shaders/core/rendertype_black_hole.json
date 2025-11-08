@@ -1,11 +1,7 @@
 {
-  "blend": {
-    "func": "add",
-    "srcrgb": "srcalpha",
-    "dstrgb": "oneminussrcalpha"
-  },
-  "vertex": "rendertype_black_hole",
-  "fragment": "rendertype_black_hole",
+  "rendertype": "auralithutilities:entity_black_hole",
+  "vertex": "auralithutilities:rendertype_black_hole",
+  "fragment": "auralithutilities:rendertype_black_hole",
   "attributes": [
     "Position",
     "Color",
@@ -15,7 +11,6 @@
     "Normal"
   ],
   "samplers": [
-    { "name":  "Sampler0" }
   ],
   "uniforms": [
     { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },

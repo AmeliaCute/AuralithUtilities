@@ -2,27 +2,22 @@ package gg.amecute.auralithutilities.Multiblock;
 
 import aztech.modern_industrialization.machines.BEP;
 import aztech.modern_industrialization.machines.blockentities.multiblocks.AbstractElectricCraftingMultiblockBlockEntity;
-import aztech.modern_industrialization.machines.components.CrafterComponent;
 import aztech.modern_industrialization.machines.components.OrientationComponent;
-import aztech.modern_industrialization.machines.gui.MachineGuiParameters;
-import aztech.modern_industrialization.machines.init.MIMachineRecipeTypes;
 import aztech.modern_industrialization.machines.models.MachineCasing;
-import aztech.modern_industrialization.machines.models.MachineCasings;
-import aztech.modern_industrialization.machines.multiblocks.ShapeMatcher;
 import aztech.modern_industrialization.machines.multiblocks.ShapeTemplate;
-import aztech.modern_industrialization.machines.recipe.MachineRecipeType;
 import gg.amecute.auralithutilities.Animation.AnimationSystem;
-import gg.amecute.auralithutilities.Animation.Impl.BlackHoleCraftingAnim;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Supplier;
 
 public abstract class AuralithMultiblock extends AbstractElectricCraftingMultiblockBlockEntity
 {
-    private int animationTick = 0;
     private boolean isAnimating = false;
     private AnimationSystem animationType;
-
 
     private final MachineCasing casing;
     private final List<ResourceLocation> workInWorld;
@@ -50,16 +45,22 @@ public abstract class AuralithMultiblock extends AbstractElectricCraftingMultibl
         {
             if(crafter.getProgress() > 0)
             {
-                if (!isAnimating)
-                {
-                    if(animationType == null) animationType = createAnimationSystem();
+                if (!isAnimating) {
+                    if(animationType != null && animationType.getUuid() != null)
+                    {
+                        animationType.rebindEntity(animationType.getUuid());
+                    } else
+                    {
+                        animationType = createAnimationSystem();
+                        registerComponents(animationType);
+
+                        animationType.startAnimation();
+                    }
 
                     isAnimating = true;
-                    animationType.startAnimation();
                 }
 
                 animationType.updateAnimation(crafter.getProgress());
-                animationTick++;
             }
             else if(isAnimating)
             {
@@ -70,8 +71,9 @@ public abstract class AuralithMultiblock extends AbstractElectricCraftingMultibl
     }
 
     @Override
-    public void setRemoved() {
+    public void setRemoved()
+    {
         super.setRemoved();
-        if(animationType != null && isAnimating) animationType.startAnimation();
+        if(animationType != null && isAnimating) animationType.stopAnimation();
     }
 }

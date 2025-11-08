@@ -10,21 +10,28 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.math.BigInteger;
 
 import static org.lwjgl.system.linux.X11.True;
 
-public class BlackHoleEntity extends Entity
+public class BlackHoleEntity extends Entity implements GeoEntity
 {
     private static final EntityDataAccessor<Float>   DATA_SIZE   = SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> DATA_STABLE = SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.BOOLEAN);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private boolean controlled  = false;
     private float   mass        = 100.0f;
     private Long    age         = 0L;
     private float   temperature = 1.0f;
-    private float   spinRate    = 1.0f; // 0.0f -> 2.0f
 
     public BlackHoleEntity(EntityType<?> entityType, Level level)
     {
@@ -32,6 +39,19 @@ public class BlackHoleEntity extends Entity
 
         this.noPhysics = true;
         this.setNoGravity(true);
+    }
+
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers)
+    {
+        controllers.add(new AnimationController<>(this, "controller", 0, state->
+                state.setAndContinue(RawAnimation.begin().thenLoop("idle"))));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 
     @Override
@@ -55,8 +75,6 @@ public class BlackHoleEntity extends Entity
         if(compoundTag.contains("Age")) age = (compoundTag.getLong("Age"));
 
         if(compoundTag.contains("Temperature")) setTemperature(compoundTag.getFloat("Temperature"));
-
-        if(compoundTag.contains("SpinRate")) setSpinRate(compoundTag.getFloat("SpinRate"));
     }
 
     @Override
@@ -68,29 +86,24 @@ public class BlackHoleEntity extends Entity
         compoundTag.putFloat("Mass", getMass());
         compoundTag.putLong("Age", getAge());
         compoundTag.putFloat("Temperature", getTemperature());
-        compoundTag.putFloat("SpinRate", getSpinRate());
     }
 
     @Override
     public void tick() {
         super.tick();
-
         age++;
 
         if(!isStable())
         {
-            float pulseSpeed = 0.05f;
+            float pulseSpeed = 1f;
             float pulseAmount = (float) Math.sin(age * pulseSpeed) * 0.3f;
             float baseSize = getSize();
-            float newSize = baseSize = pulseAmount * 0.01f;
+            float newSize = baseSize + pulseAmount * .25f;
             setSize(newSize);
 
             temperature = 1.0f / baseSize;
         }
-
-        this.setYRot(this.getYRot() + spinRate);
-
-        if(!level().isClientSide && !isControlled()) applyGravitationalPull();
+        if(!isControlled() && !level().isClientSide) applyGravitationalPull();
     }
 
     public void applyGravitationalPull()
@@ -99,7 +112,7 @@ public class BlackHoleEntity extends Entity
         float pullStrengh = mass / 50.0f;
 
         level().getEntities(this, getBoundingBox().inflate(pullRadius),
-                entity -> entity != this && !entity.isSpectator()).forEach(
+                entity -> entity != this && !entity.isSpectator() && !entity.isSprinting()).forEach(
                 entity ->
                 {
                     Vec3 toBlackHole = this.position().subtract(entity.position());
@@ -189,14 +202,5 @@ public class BlackHoleEntity extends Entity
         this.temperature = temperature;
     }
 
-    public float getSpinRate()
-    {
-        return spinRate;
-    }
-
-    public void setSpinRate(float spinRate)
-    {
-        this.spinRate = Math.max(0.0f, Math.min(5.0f, spinRate));
-    }
 
 }

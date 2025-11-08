@@ -1,5 +1,5 @@
 {
-  "type": "modern_industrialization:assembler",
+  "type": "modern_industrialization:matter_transformer",
   "eu": 1024,
   "duration": 200,
   "item_inputs": [

@@ -41,6 +41,18 @@ repositories {
         name = "Sinytra"
         url = "https://maven.sinytra.org/"
     }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'GeckoLib'
+                url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+            }
+        }
+        filter {
+            includeGroup('software.bernie.geckolib')
+        }
+    }
 }
 
 base {
@@ -142,6 +154,8 @@ dependencies {
 
     additionalRuntimeClasspath "org.sinytra:connector:2.0.0-beta.9+1.21.1"
     runtimeOnly     "org.sinytra.forgified-fabric-api:forgified-fabric-api:0.115.6+2.1.4+1.21.1"
+
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
