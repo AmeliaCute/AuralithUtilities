@@ -8,10 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class TransButton extends Button
 {
-    private static final int LUNAR_BLUE = 0x4A90E2;
-    private static final int LUNAR_BLUE_HOVER = 0x5BA3F5;
-    private static final int LUNAR_BORDER = 0x2C5F8F;
-
     private final Minecraft minecraft;
 
     public TransButton(int x, int y, int width, int height, Component message, OnPress onPress)
