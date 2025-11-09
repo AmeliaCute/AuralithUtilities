@@ -1,10 +1,15 @@
 package gg.amecute.auralithutilities.Registries;
 
+import aztech.modern_industrialization.compat.rei.machines.ReiMachineRecipes;
+import aztech.modern_industrialization.machines.guicomponents.ProgressBar;
+import aztech.modern_industrialization.machines.init.MIMachineRecipeTypes;
 import aztech.modern_industrialization.machines.init.MachineRegistrationHelper;
+import aztech.modern_industrialization.machines.init.MultiblockMachines;
 import aztech.modern_industrialization.machines.models.MachineCasings;
 import gg.amecute.auralithutilities.AuralithUtilities;
-import gg.amecute.auralithutilities.Block.BlackHoleCrafterBlock;
-import gg.amecute.auralithutilities.Multiblock.BlackHoleCrafter;
+import gg.amecute.auralithutilities.Block.MatterTransformerCrafterBlock;
+import gg.amecute.auralithutilities.Multiblock.MatterTransformerCrafter;
+import gg.amecute.auralithutilities.Multiblock.ShapeTemplate.MatterTransformerCrafterShape;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -22,21 +27,21 @@ public class AuralithMachines
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, AuralithUtilities.MODID);
 
-    public static final Supplier<Block> BLACK_HOLE_CRAFTER_BLOCK =
-            BLOCKS.register("black_hole_crafter", () ->
+    public static final Supplier<Block> MATTER_TRANSFORMER_CRAFTER_BLOCK =
+            BLOCKS.register("matter_transformer_crafter", () ->
             {
-                return new BlackHoleCrafterBlock(BlockBehaviour.Properties.of().sound(SoundType.LODESTONE));
+                return new MatterTransformerCrafterBlock(BlockBehaviour.Properties.of().sound(SoundType.LODESTONE));
             });
 
 
-    public static Supplier<BlockEntityType<?>> BLACK_HOLE_CRAFTER_BE;
+    public static Supplier<BlockEntityType<?>> MATTER_TRANSFORMER_CRAFTER_BE =
+            MachineRegistrationHelper.registerMachine(
+                    "Matter transformer crafter",
+                    "matter_transformer_crafter",
+                    bet -> new MatterTransformerCrafter(bet, MachineCasings.STEEL)
+            );
 
-    public static void registerBlockEntities() {
-        BLACK_HOLE_CRAFTER_BE =
-                MachineRegistrationHelper.registerMachine(
-                        "Black hole crafter",
-                        "black_hole_crafter",
-                        bet -> new BlackHoleCrafter(bet, MachineCasings.STEEL)
-                );
+    public static void registerBlockEntities()
+    {
     }
 }

@@ -7,21 +7,21 @@ import aztech.modern_industrialization.machines.recipe.MachineRecipeType;
 import gg.amecute.auralithutilities.Animation.AnimationSystem;
 import gg.amecute.auralithutilities.Animation.Impl.MatterCraftingAnim;
 import gg.amecute.auralithutilities.AuralithUtilities;
-import gg.amecute.auralithutilities.Multiblock.ShapeTemplate.BlackHoleCrafterShape;
+import gg.amecute.auralithutilities.Multiblock.ShapeTemplate.MatterTransformerCrafterShape;
 import gg.amecute.auralithutilities.Registries.AuralithRecipeType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
-public class BlackHoleCrafter extends AuralithMultiblock {
+public class MatterTransformerCrafter extends AuralithMultiblock {
 
-    public BlackHoleCrafter(BEP bep, MachineCasing hatchCasing) {
+    public MatterTransformerCrafter(BEP bep, MachineCasing hatchCasing) {
         super(
                 bep,
-                ResourceLocation.fromNamespaceAndPath(AuralithUtilities.MODID, "black_hole_crafter"),
+                ResourceLocation.fromNamespaceAndPath(AuralithUtilities.MODID, "matter_transformer_crafter"),
                 new OrientationComponent.Params(true, true, false, false),
                 hatchCasing,
                 null,
-                BlackHoleCrafterShape.get()
+                MatterTransformerCrafterShape.get()
         );
     }
 

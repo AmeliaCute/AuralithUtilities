@@ -11,10 +11,14 @@ import net.minecraft.resources.ResourceLocation;
 
 import static aztech.modern_industrialization.machines.multiblocks.HatchTypes.*;
 
-public class BlackHoleCrafterShape
+public class MatterTransformerCrafterShape
 {
+    private static ShapeTemplate shape;
+
     public static ShapeTemplate get()
     {
+        if(shape != null) return shape;
+
         SimpleMember steelCasing = SimpleMember.forBlock(MIBlock.BLOCK_DEFINITIONS.get(MI.id("steel_machine_casing")));
         SimpleMember steelPipe = SimpleMember.forBlock(MIBlock.BLOCK_DEFINITIONS.get(MI.id("steel_machine_casing_pipe")));
         SimpleMember stainlessCasing = SimpleMember.forBlock(MIBlock.BLOCK_DEFINITIONS.get(MI.id("clean_stainless_steel_machine_casing")));
@@ -755,12 +759,14 @@ public class BlackHoleCrafterShape
 
         String[][] fixed = ShapeFixer.transposeLayers(orgin);
 
-        return new ShapeTemplate.LayeredBuilder(MachineCasings.STEEL, fixed)
+        shape = new ShapeTemplate.LayeredBuilder(MachineCasings.STEEL, fixed)
                 .key('c', steelCasing, null)
                 .key('p', steelPipe, null)
                 .key('q', stainlessCasing, null)
                 .key('g', glass, null)
                 .key('h', steelCasing, hatchFlags)
                 .build();
+
+        return shape;
     }
 }

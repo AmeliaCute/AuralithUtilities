@@ -2,9 +2,9 @@ package gg.amecute.auralithutilities.Block;
 
 import net.minecraft.world.level.block.Block;
 
-public class BlackHoleCrafterBlock extends Block
+public class MatterTransformerCrafterBlock extends Block
 {
-    public BlackHoleCrafterBlock(Properties properties) {
+    public MatterTransformerCrafterBlock(Properties properties) {
         super(properties);
     }
 }
