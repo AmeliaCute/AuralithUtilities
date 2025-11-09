@@ -1,6 +1,7 @@
 package gg.amecute.auralithutilities;
 
 import gg.amecute.auralithutilities.Event.MainMenuReplacer;
+import gg.amecute.auralithutilities.Registries.*;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,15 +25,27 @@ public class AuralithUtilities
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(MainMenuReplacer.class);
 
+        AuralithRecipeType.register();
+
+
+        AuralithEntities.ENTITY_TYPE.register(modEventBus);
+        AuralithItems.ITEMS.register(modEventBus);
+
+        AuralithMachines.BLOCKS.register(modEventBus);
+        AuralithMachines.registerBlockEntities();
+
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
-    private void commonSetup(FMLCommonSetupEvent event) {
+    private void commonSetup(FMLCommonSetupEvent event)
+    {
+        event.enqueueWork(() -> AuralithREI.init());
     }
 
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
+    public void onServerStarting(ServerStartingEvent event) 
+    {
     }
 
     public static ResourceLocation resGet(String path)

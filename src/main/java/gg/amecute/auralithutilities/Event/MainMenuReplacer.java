@@ -2,7 +2,7 @@ package gg.amecute.auralithutilities.Event;
 
 import gg.amecute.auralithutilities.AuralithUtilities;
 import gg.amecute.auralithutilities.Config;
-import gg.amecute.auralithutilities.MainMenu.AuralithTitleScreen;
+import gg.amecute.auralithutilities.Client.MainMenu.AuralithTitleScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;

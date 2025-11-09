@@ -1,4 +1,4 @@
-package gg.amecute.auralithutilities.MainMenu;
+package gg.amecute.auralithutilities.Client.MainMenu;
 
 import com.google.gson.Gson;
 import gg.amecute.auralithutilities.AuralithUtilities;

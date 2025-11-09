@@ -1,0 +1,11 @@
+{
+  "type": "modern_industrialization:matter_transformer",
+  "eu": 24,
+  "duration": 200,
+  "item_inputs": [
+    { "item": "mysticalagriculture:blaze_essence", "count": 6 }
+  ],
+  "item_outputs": [
+    { "item": "minecraft:blaze_rod", "count": 12 }
+  ]
+}

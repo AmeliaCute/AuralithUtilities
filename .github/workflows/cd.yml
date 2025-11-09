@@ -48,3 +48,18 @@ jobs:
           game-versions: |-
             1.21.1
           files: build/libs/auralithutilities-1.0.0.jar
+          dependencies: |-
+          [
+            {
+              "project_id": "Gov5Dboq",
+              "dependency_type": "required"
+            },
+            {
+              "project_id": "SaWFztxY",
+              "dependency_type": "required"
+            },
+            {
+              "project_id": "pl0jGXIx",
+              "dependency_type": "required"
+            },
+          ]

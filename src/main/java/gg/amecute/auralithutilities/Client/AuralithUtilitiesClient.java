@@ -1,5 +1,9 @@
-package gg.amecute.auralithutilities;
+package gg.amecute.auralithutilities.Client;
 
+import gg.amecute.auralithutilities.AuralithUtilities;
+import gg.amecute.auralithutilities.Client.Renderer.BlackHoleEntityRenderer;
+import gg.amecute.auralithutilities.Registries.AuralithEntities;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -15,6 +19,8 @@ public class AuralithUtilitiesClient {
     }
 
     @SubscribeEvent
-    static void onClientSetup(FMLClientSetupEvent event) {
+    static void onClientSetup(FMLClientSetupEvent event)
+    {
+        EntityRenderers.register(AuralithEntities.BLACK_HOLE.get(), BlackHoleEntityRenderer::new);
     }
 }
