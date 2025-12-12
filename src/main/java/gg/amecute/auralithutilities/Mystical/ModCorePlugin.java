@@ -4,6 +4,7 @@ import com.blakebr0.mysticalagriculture.api.IMysticalAgriculturePlugin;
 import com.blakebr0.mysticalagriculture.api.MysticalAgriculturePlugin;
 import com.blakebr0.mysticalagriculture.api.lib.PluginConfig;
 import com.blakebr0.mysticalagriculture.api.registry.ICropRegistry;
+import gg.amecute.auralithutilities.Registries.MysticalCrops;
 
 import static com.blakebr0.mysticalagriculture.MysticalAgriculture.MOD_ID;
 
@@ -21,6 +22,6 @@ public class ModCorePlugin implements IMysticalAgriculturePlugin
 
     @Override
     public void onRegisterCrops(ICropRegistry registry) {
-        ModCrops.onRegisterCrops(registry);
+        MysticalCrops.onRegisterCrops(registry);
     }
 }
