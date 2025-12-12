@@ -1,8 +1,8 @@
-package gg.amecute.auralithutilities;
+package gg.amecute.auralithutilities.Config;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-public class Config
+public class ClientConfig
 {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     public static final ModConfigSpec SPEC;
@@ -12,7 +12,8 @@ public class Config
     static {
         BUILDER.push("Client settings");
 
-        AURALITH_MAIN_MENU = BUILDER.comment("Show Auralith special mod menu").define("showAuralith", false);
+        AURALITH_MAIN_MENU = BUILDER.comment("Show Auralith special mod menu")
+                .define("showAuralith", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

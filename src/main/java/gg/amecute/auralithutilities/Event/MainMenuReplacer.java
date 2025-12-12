@@ -1,7 +1,7 @@
 package gg.amecute.auralithutilities.Event;
 
 import gg.amecute.auralithutilities.AuralithUtilities;
-import gg.amecute.auralithutilities.Config;
+import gg.amecute.auralithutilities.Config.ClientConfig;
 import gg.amecute.auralithutilities.MainMenu.AuralithTitleScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.neoforged.api.distmarker.Dist;
@@ -16,7 +16,7 @@ public class MainMenuReplacer
     public static void onMainMenuOpen(ScreenEvent.Opening event)
     {
 
-        if(Config.AURALITH_MAIN_MENU.get() && event.getScreen() instanceof TitleScreen)
+        if(ClientConfig.AURALITH_MAIN_MENU.get() && event.getScreen() instanceof TitleScreen)
             event.setNewScreen(new AuralithTitleScreen());
     }
 }

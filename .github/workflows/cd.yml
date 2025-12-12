@@ -36,15 +36,25 @@ jobs:
           echo "TAG_NAME=$DATE_TAG" >> $GITHUB_ENV
           echo "{tag}=$DATE_TAG"
 
-      - name: Upload to Modrinth
-        uses: cloudnode-pro/modrinth-publish@v2
+      - name: Publish Fabric to CurseForge and Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
         with:
-          token: ${{ secrets.MODRINTH_TOKEN }}
-          project: jx0u7UEL
-          name: auralith-compat-and-additions-${{ env.TAG_NAME }}
-          version: ${{ env.TAG_NAME }}
-          loaders: |-
+          curseforge-id: 1372216
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          modrinth-id: jx0u7UEL
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          version: auralith-core-${{ steps.commit.outputs.sha }}-${{ steps.version.outputs.version }}
+          version-type: release
+
+          game-versions: 1.21.1
+
+          loaders: |
             neoforge
-          game-versions: |-
-            1.21.1
-          files: build/libs/auralithutilities-1.0.0.jar
+
+          files: |
+            build/libs/*-REL.jar
+
+          retry-attempts: 2
+          retry-delay: 10000

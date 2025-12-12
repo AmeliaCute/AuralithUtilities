@@ -1,5 +1,7 @@
 package gg.amecute.auralithutilities;
 
+import gg.amecute.auralithutilities.Config.ClientConfig;
+import gg.amecute.auralithutilities.Config.CommonConfig;
 import gg.amecute.auralithutilities.Event.MainMenuReplacer;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -24,7 +26,8 @@ public class AuralithUtilities
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(MainMenuReplacer.class);
 
-        modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
