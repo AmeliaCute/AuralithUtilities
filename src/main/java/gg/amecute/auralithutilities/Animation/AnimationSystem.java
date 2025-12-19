@@ -1,6 +1,6 @@
 package gg.amecute.auralithutilities.Animation;
 
-import aztech.modern_industrialization.machines.IComponent;
+import aztech.modern_industrialization.machines.MachineComponent;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -8,7 +8,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
 
-public abstract class AnimationSystem implements IComponent {
+public abstract class AnimationSystem implements MachineComponent {
     protected final Level level;
     protected final Vec3 origin;
     protected UUID uuid;

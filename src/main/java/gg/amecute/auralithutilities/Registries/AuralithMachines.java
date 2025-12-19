@@ -1,8 +1,10 @@
 package gg.amecute.auralithutilities.Registries;
 
 import aztech.modern_industrialization.compat.rei.machines.ReiMachineRecipes;
+import aztech.modern_industrialization.machines.MachineBlockEntity;
 import aztech.modern_industrialization.machines.guicomponents.ProgressBar;
 import aztech.modern_industrialization.machines.init.MIMachineRecipeTypes;
+import aztech.modern_industrialization.machines.init.MachineDefinition;
 import aztech.modern_industrialization.machines.init.MachineRegistrationHelper;
 import aztech.modern_industrialization.machines.init.MultiblockMachines;
 import aztech.modern_industrialization.machines.models.MachineCasings;
@@ -34,7 +36,7 @@ public class AuralithMachines
             });
 
 
-    public static Supplier<BlockEntityType<?>> MATTER_TRANSFORMER_CRAFTER_BE =
+    public static MachineDefinition<MachineBlockEntity> MATTER_TRANSFORMER_CRAFTER_BE =
             MachineRegistrationHelper.registerMachine(
                     "Matter transformer crafter",
                     "matter_transformer_crafter",
