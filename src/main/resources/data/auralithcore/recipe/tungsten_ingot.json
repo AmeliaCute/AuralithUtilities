@@ -1,0 +1,23 @@
+{
+  "type": "crafting_shaped",
+  "neoforge:conditions": [
+    {
+      "type": "mysticalagriculture:crop_enabled",
+      "crop": "auralithutilities:tungsten"
+    }
+  ],
+  "pattern": [
+    "AAA",
+    "A A",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "mysticalagriculture:tungsten_essence"
+    }
+  },
+  "result": {
+    "id": "modern_industrialization:tungsten_ingot",
+    "count": 6
+  }
+}
