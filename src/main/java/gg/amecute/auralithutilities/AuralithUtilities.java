@@ -38,7 +38,6 @@ public class AuralithUtilities
 
         modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
         modContainer.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
