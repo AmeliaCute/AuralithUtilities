@@ -14,14 +14,15 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Mod(AuralithUtilities.MODID)
 public class AuralithUtilities
 {
+    public static final Logger LOGGER = LoggerFactory.getLogger(AuralithUtilities.class);
     public static final String MODID = "auralithcore";
 
     public AuralithUtilities(IEventBus modEventBus, ModContainer modContainer) {

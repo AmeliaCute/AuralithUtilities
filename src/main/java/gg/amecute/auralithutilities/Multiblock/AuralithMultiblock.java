@@ -38,7 +38,8 @@ public abstract class AuralithMultiblock extends AbstractElectricCraftingMultibl
     protected abstract AnimationSystem createAnimationSystem();
 
     @Override
-    public void tickExtra() {
+    public void tickExtra()
+    {
         super.tickExtra();
 
         if(level != null && !level.isClientSide)

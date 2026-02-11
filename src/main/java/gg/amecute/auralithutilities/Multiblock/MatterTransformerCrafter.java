@@ -5,7 +5,6 @@ import aztech.modern_industrialization.machines.components.OrientationComponent;
 import aztech.modern_industrialization.machines.models.MachineCasing;
 import aztech.modern_industrialization.machines.recipe.MachineRecipeType;
 import gg.amecute.auralithutilities.Animation.AnimationSystem;
-import gg.amecute.auralithutilities.Animation.Impl.MatterCraftingAnim;
 import gg.amecute.auralithutilities.AuralithUtilities;
 import gg.amecute.auralithutilities.Multiblock.ShapeTemplate.MatterTransformerCrafterShape;
 import gg.amecute.auralithutilities.Registries.AuralithRecipeType;
