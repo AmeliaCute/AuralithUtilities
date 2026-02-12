@@ -6,33 +6,62 @@ import aztech.modern_industrialization.machines.components.OrientationComponent;
 import aztech.modern_industrialization.machines.models.MachineCasing;
 import aztech.modern_industrialization.machines.multiblocks.ShapeTemplate;
 import gg.amecute.auralithutilities.Animation.AnimationSystem;
+import gg.amecute.auralithutilities.AuralithUtilities;
+import gg.amecute.auralithutilities.Multiblock.Data.MultiblockStructure;
+import gg.amecute.auralithutilities.Multiblock.Data.ShapeConverter;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Supplier;
+import java.util.Optional;
 
 public abstract class AuralithMultiblock extends AbstractElectricCraftingMultiblockBlockEntity
 {
     private boolean isAnimating = false;
     private AnimationSystem animationType;
 
-    private final MachineCasing casing;
-    private final List<ResourceLocation> workInWorld;
+    protected final ResourceLocation structureId;
+    protected final MultiblockStructure structure;
+    protected final MachineCasing casing;
 
-    public AuralithMultiblock(BEP bep, ResourceLocation name, OrientationComponent.Params params, MachineCasing hatchCasing,List<ResourceLocation> workInWorld, ShapeTemplate shape)
+    public AuralithMultiblock(
+        BEP bep,
+        ResourceLocation structureId,
+        OrientationComponent.Params params,
+        MachineCasing hatchCasing,
+        ShapeTemplate fallbackShape
+    )
     {
-        super(
-                bep,
-                name,
-                params,
-                new ShapeTemplate[]{ shape }
-        );
+        super(bep, structureId, params, new ShapeTemplate[]{ buildShape(structureId, fallbackShape) });
 
+        this.structureId = structureId;
         this.casing = hatchCasing;
-        this.workInWorld = workInWorld;
+        this.structure = loadStructureFromManager(structureId).orElse(null);
+    }
+
+    private static ShapeTemplate buildShape(ResourceLocation structureId, ShapeTemplate fallback)
+    {
+        Optional<MultiblockStructure> structureOpt = loadStructureFromManager(structureId);
+
+        if (structureOpt.isPresent())
+        {
+            try
+            {
+                return ShapeConverter.convert(structureOpt.get());
+            }
+            catch (Exception e)
+            {
+                AuralithUtilities.LOGGER.error("Failed to convert structure {}, using fallback", structureId, e);
+            }
+        }
+
+        return fallback;
+    }
+
+    private static Optional<MultiblockStructure> loadStructureFromManager(ResourceLocation id)
+    {
+        var manager = AuralithUtilities.getStructureManager();
+        if (manager != null) return manager.getStructure(id);
+
+        return Optional.empty();
     }
 
     protected abstract AnimationSystem createAnimationSystem();
@@ -42,31 +71,31 @@ public abstract class AuralithMultiblock extends AbstractElectricCraftingMultibl
     {
         super.tickExtra();
 
-        if(level != null && !level.isClientSide)
+        if (level != null && !level.isClientSide)
         {
-            if(crafter.getProgress() > 0)
+            if (crafter.getProgress() > 0)
             {
-                if (!isAnimating) {
-                    if(animationType != null && animationType.getUuid() != null)
-                    {
-                        animationType.rebindEntity(animationType.getUuid());
-                    } else
+                if (!isAnimating)
+                {
+                    if (animationType != null && animationType.getUuid() != null) animationType.rebindEntity(animationType.getUuid());
+                    else
                     {
                         animationType = createAnimationSystem();
-                        registerComponents(animationType);
-
-                        animationType.startAnimation();
+                        if (animationType != null)
+                        {
+                            registerComponents(animationType);
+                            animationType.startAnimation();
+                        }
                     }
-
                     isAnimating = true;
                 }
 
-                animationType.updateAnimation(crafter.getProgress());
+                if (animationType != null) animationType.updateAnimation(crafter.getProgress());
             }
-            else if(isAnimating)
+            else if (isAnimating)
             {
                 isAnimating = false;
-                animationType.stopAnimation();
+                if (animationType != null) animationType.stopAnimation();
             }
         }
     }
@@ -75,6 +104,11 @@ public abstract class AuralithMultiblock extends AbstractElectricCraftingMultibl
     public void setRemoved()
     {
         super.setRemoved();
-        if(animationType != null && isAnimating) animationType.stopAnimation();
+        if (animationType != null && isAnimating) animationType.stopAnimation();
+    }
+
+    public MultiblockStructure getStructure()
+    {
+        return structure;
     }
 }

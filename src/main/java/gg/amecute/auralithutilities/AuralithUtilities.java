@@ -1,8 +1,10 @@
 package gg.amecute.auralithutilities;
 
+import gg.amecute.auralithutilities.Command.MultiblockCommands;
 import gg.amecute.auralithutilities.Config.ClientConfig;
 import gg.amecute.auralithutilities.Config.CommonConfig;
 import gg.amecute.auralithutilities.Event.MainMenuReplacer;
+import gg.amecute.auralithutilities.Multiblock.Data.MultiblockStructureManager;
 import gg.amecute.auralithutilities.Registries.AuralithEntities;
 import gg.amecute.auralithutilities.Registries.AuralithItems;
 import gg.amecute.auralithutilities.Registries.AuralithMachines;
@@ -15,6 +17,8 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +26,7 @@ import org.slf4j.LoggerFactory;
 @Mod(AuralithUtilities.MODID)
 public class AuralithUtilities
 {
+    private static MultiblockStructureManager structureManager;
     public static final Logger LOGGER = LoggerFactory.getLogger(AuralithUtilities.class);
     public static final String MODID = "auralithcore";
 
@@ -48,9 +53,28 @@ public class AuralithUtilities
     public void onServerStarting(ServerStartingEvent event) {
     }
 
+    @SubscribeEvent
+    public static void onAddReloadListener(AddReloadListenerEvent event)
+    {
+        MultiblockStructureManager manager = new MultiblockStructureManager();
+        setStructureManager(manager);
+        event.addListener(manager);
+
+        AuralithUtilities.LOGGER.info("Registered MultiblockStructureManager");
+    }
+
+    @SubscribeEvent
+    public static void onRegisterCommands(RegisterCommandsEvent event)
+    {
+        MultiblockCommands.register(event.getDispatcher());
+        AuralithUtilities.LOGGER.info("Registered multiblock commands");
+    }
+
     public static ResourceLocation resGet(String path)
     {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
+    public static MultiblockStructureManager getStructureManager() { return structureManager; }
+    public static void setStructureManager(MultiblockStructureManager manager) { structureManager = manager; }
 }

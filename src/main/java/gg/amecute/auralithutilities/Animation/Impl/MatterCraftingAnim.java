@@ -7,6 +7,11 @@ public class MatterCraftingAnim extends LaserConvergenceAnimation
 {
 	public MatterCraftingAnim(Level level, Vec3 position, float maxSize)
 	{
-		super(level, position, maxSize, 0xFF000000, 0xFFFFFFFF);
+		this(level, position, maxSize, 0xFF000000, 0xFFFFFFFF);
+	}
+
+	public MatterCraftingAnim(Level level, Vec3 position, float maxSize, int interiorColor, int outlineColor)
+	{
+		super(level, position, maxSize, interiorColor, outlineColor);
 	}
 }

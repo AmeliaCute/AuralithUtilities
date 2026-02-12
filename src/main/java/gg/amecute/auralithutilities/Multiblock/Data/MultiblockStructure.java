@@ -15,6 +15,7 @@ public record MultiblockStructure
 		(
 				ResourceLocation id,
 				String name,
+				String casing,
 				MultiblockType type,
 				Vec3i size,
 				Map<Character, BlockDefinition> palette,
@@ -28,6 +29,7 @@ public record MultiblockStructure
 			instance.group(
 					ResourceLocation.CODEC.fieldOf("id").forGetter(MultiblockStructure::id),
 					Codec.STRING.fieldOf("name").forGetter(MultiblockStructure::name),
+					Codec.STRING.fieldOf("casing").forGetter(MultiblockStructure::casing),
 					MultiblockType.CODEC.fieldOf("type").forGetter(MultiblockStructure::type),
 					Vec3i.CODEC.fieldOf("size").forGetter(MultiblockStructure::size),
 					Codec.unboundedMap(Codec.STRING.xmap(s -> s.charAt(0), c -> String.valueOf(c)),
@@ -77,126 +79,3 @@ public record MultiblockStructure
 	}
 }
 
-record Vec3i(int x, int y, int z)
-{
-	public static final Codec<Vec3i> CODEC = RecordCodecBuilder.create(instance ->
-			instance.group(
-					Codec.INT.fieldOf("x").forGetter(Vec3i::x),
-					Codec.INT.fieldOf("y").forGetter(Vec3i::y),
-					Codec.INT.fieldOf("z").forGetter(Vec3i::z)
-			).apply(instance, Vec3i::new)
-	);
-}
-
-record BlockDefinition
-		(
-				ResourceLocation blockId,
-				Optional<String> hatchType,
-				boolean isController,
-				Map<String, String> properties
-		)
-{
-	public static final Codec<BlockDefinition> CODEC = RecordCodecBuilder.create(instance ->
-			instance.group(
-					ResourceLocation.CODEC.fieldOf("block").forGetter(BlockDefinition::blockId),
-					Codec.STRING.optionalFieldOf("hatch_type").forGetter(BlockDefinition::hatchType),
-					Codec.BOOL.optionalFieldOf("is_controller", false).forGetter(BlockDefinition::isController),
-					Codec.unboundedMap(Codec.STRING, Codec.STRING).optionalFieldOf("properties", Map.of())
-							.forGetter(BlockDefinition::properties)
-			).apply(instance, BlockDefinition::new)
-	);
-
-	public Block getBlock()
-	{
-		return BuiltInRegistries.BLOCK.get(blockId);
-	}
-}
-
-enum MultiblockType
-{
-	MACHINE,
-	MODIFIER,
-	DECORATION;
-
-	public static final Codec<MultiblockType> CODEC = Codec.STRING.xmap(
-			s -> MultiblockType.valueOf(s.toUpperCase()),
-			Enum::name
-	);
-}
-
-public record ModifierConfig
-		(
-				String targetType,
-				Map<String, Double> modifiers,
-				int maxStacks,
-				List<Direction> allowedDirections
-		)
-{
-	public static final Codec<ModifierConfig> CODEC = RecordCodecBuilder.create(instance ->
-			instance.group(
-					Codec.STRING.fieldOf("target_type").forGetter(ModifierConfig::targetType),
-					Codec.unboundedMap(Codec.STRING, Codec.DOUBLE).fieldOf("modifiers").forGetter(ModifierConfig::modifiers),
-					Codec.INT.optionalFieldOf("max_stacks", 1).forGetter(ModifierConfig::maxStacks),
-					Codec.list(Direction.CODEC).optionalFieldOf("allowed_directions", List.of(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST))
-							.forGetter(ModifierConfig::allowedDirections)
-			).apply(instance, ModifierConfig::new)
-	);
-
-	public enum Direction
-	{
-		NORTH, SOUTH, EAST, WEST, UP, DOWN;
-
-		public static final Codec<Direction> CODEC = Codec.STRING.xmap(
-				s -> Direction.valueOf(s.toUpperCase()),
-				Enum::name
-		);
-	}
-}
-
-record Vec3d(double x, double y, double z)
-{
-	public static final Codec<Vec3d> CODEC = RecordCodecBuilder.create(instance ->
-			instance.group(
-					Codec.DOUBLE.fieldOf("x").forGetter(Vec3d::x),
-					Codec.DOUBLE.fieldOf("y").forGetter(Vec3d::y),
-					Codec.DOUBLE.fieldOf("z").forGetter(Vec3d::z)
-			).apply(instance, Vec3d::new)
-	);
-}
-
-record AnimationConfig
-		(
-				String animationType,
-				Vec3d offset,
-				float scale,
-				Map<String, Object> parameters
-		)
-{
-	public static final Codec<AnimationConfig> CODEC = RecordCodecBuilder.create(instance ->
-			instance.group(
-					Codec.STRING.fieldOf("animation_type").forGetter(AnimationConfig::animationType),
-					Vec3d.CODEC.fieldOf("offset").forGetter(AnimationConfig::offset),
-					Codec.FLOAT.optionalFieldOf("scale", 1.0f).forGetter(AnimationConfig::scale),
-					Codec.unboundedMap(Codec.STRING, Codec.STRING).optionalFieldOf("parameters", Map.of())
-							.xmap(m -> (Map<String, Object>)(Map<?, ?>)m, m -> (Map<String, String>)(Map<?, ?>)m)
-							.forGetter(AnimationConfig::parameters)
-			).apply(instance, AnimationConfig::new)
-	);
-}
-
-record RecipeConfig(
-		ResourceLocation recipeType,
-		long baseEnergyUsage,
-		long maxEnergyUsage,
-		int baseProcessingTime
-)
-{
-	public static final Codec<RecipeConfig> CODEC = RecordCodecBuilder.create(instance ->
-			instance.group(
-					ResourceLocation.CODEC.fieldOf("recipe_type").forGetter(RecipeConfig::recipeType),
-					Codec.LONG.fieldOf("base_energy_usage").forGetter(RecipeConfig::baseEnergyUsage),
-					Codec.LONG.fieldOf("max_energy_usage").forGetter(RecipeConfig::maxEnergyUsage),
-					Codec.INT.optionalFieldOf("base_processing_time", 200).forGetter(RecipeConfig::baseProcessingTime)
-			).apply(instance, RecipeConfig::new)
-	);
-}
