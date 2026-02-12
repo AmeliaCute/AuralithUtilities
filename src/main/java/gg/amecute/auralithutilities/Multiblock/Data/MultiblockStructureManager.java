@@ -34,7 +34,7 @@ public class MultiblockStructureManager extends SimpleJsonResourceReloadListener
 
 		for(Map.Entry<ResourceLocation, JsonElement> entry : jsons.entrySet())
 		{
-			ResourceLocation id = entry.getKey();
+			ResourceLocation fileId = entry.getKey();
 			JsonElement json = entry.getValue();
 
 			try
@@ -42,20 +42,89 @@ public class MultiblockStructureManager extends SimpleJsonResourceReloadListener
 				var result = MultiblockStructure.CODEC.parse(JsonOps.INSTANCE, json);
 
 				result.resultOrPartial(error -> {
-					AuralithUtilities.LOGGER.error("Failed to parse multiblock structure {}: {}", id, error);
-				}).ifPresent(structure -> {
+					AuralithUtilities.LOGGER.error("Failed to parse multiblock structure {}: {}", fileId, error);
+				}).ifPresent(loadedStructure -> {
+					MultiblockStructure structure = loadedStructure;
+
+					ResourceLocation structureId = structure.id();
+					if (structureId.getNamespace().equals("unknown"))
+					{
+						structureId = fileId;
+						structure = new MultiblockStructure(
+								structureId,
+								structure.name().equals("Unknown") ? fileId.getPath() : structure.name(),
+								structure.casing(),
+								structure.type(),
+								structure.size(),
+								structure.palette(),
+								structure.layers(),
+								structure.modifierConfig(),
+								structure.animationConfig(),
+								structure.recipeConfig()
+						);
+					}
+
+					Vec3i size = structure.size();
+					if (size.x() == 3 && size.y() == 3 && size.z() == 3)
+					{
+						size = MultiblockStructure.calculateSize(structure.layers());
+						structure = new MultiblockStructure(
+								structure.id(),
+								structure.name(),
+								structure.casing(),
+								structure.type(),
+								size,
+								structure.palette(),
+								structure.layers(),
+								structure.modifierConfig(),
+								structure.animationConfig(),
+								structure.recipeConfig()
+						);
+					}
+
+					if (structure.casing().equals("modern_industrialization:steel_machine_casing"))
+					{
+						String derivedCasing = MultiblockStructure.deriveCasing(structure.palette());
+						structure = new MultiblockStructure(
+								structure.id(),
+								structure.name(),
+								derivedCasing,
+								structure.type(),
+								structure.size(),
+								structure.palette(),
+								structure.layers(),
+								structure.modifierConfig(),
+								structure.animationConfig(),
+								structure.recipeConfig()
+						);
+					}
+
 					structures.put(structure.id(), structure);
 					structuresByType.computeIfAbsent(structure.type().name().toLowerCase(),k -> new ArrayList<>()).add(structure);
 
-					AuralithUtilities.LOGGER.info("Loaded multiblock structure: {} (type: {})",
-							structure.name(), structure.type());
+					AuralithUtilities.LOGGER.info("Loaded multiblock structure: {} (type: {}, size: {}x{}x{})",
+							structure.name(), structure.type(), structure.size().x(), structure.size().y(), structure.size().z());
 				});
 
-				if (result.error().isPresent()) AuralithUtilities.LOGGER.error("Exception loading multiblock structure {}", id);
+				if (result.error().isPresent()) AuralithUtilities.LOGGER.error("Exception loading multiblock structure {}", fileId);
 
-			} catch (Exception e) {
-				AuralithUtilities.LOGGER.error("Exception loading multiblock structure {}", id, e);
+			} catch (Exception e)
+			{
+				AuralithUtilities.LOGGER.error("Exception loading multiblock structure {}", fileId, e);
 			}
+		}
+
+		AuralithUtilities.LOGGER.info("Loaded {} multiblock structures from datapacks", structures.size());
+
+		try
+		{
+			Class.forName("gg.amecute.auralithutilities.Multiblock.AuralithMultiblock")
+				.getMethod("reloadAllShapes", MultiblockStructureManager.class)
+				.invoke(null, this);
+		}
+		catch (Exception e)
+		{
+			AuralithUtilities.LOGGER.warn("Could not reload multiblock shapes: {}", e.getMessage());
 		}
 	}
 

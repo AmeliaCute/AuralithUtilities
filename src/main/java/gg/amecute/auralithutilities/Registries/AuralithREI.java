@@ -5,7 +5,6 @@ import aztech.modern_industrialization.machines.guicomponents.ProgressBar;
 import aztech.modern_industrialization.machines.init.MachineRegistrationHelper;
 import aztech.modern_industrialization.machines.init.MultiblockMachines;
 import aztech.modern_industrialization.machines.models.MachineCasings;
-import gg.amecute.auralithutilities.Multiblock.ShapeTemplate.MatterTransformerCrafterShape;
 
 public class AuralithREI
 {
@@ -17,11 +16,5 @@ public class AuralithREI
         new MultiblockMachines.Rei("Matter Transformer Crafter", "matter_transformer_crafter", AuralithRecipeType.MATTER_TRANSFORMER, new ProgressBar.Params(77, 33, "arrow"))
                 .items(inputs -> inputs.addSlots(56, 35, 3, 4), outputs -> outputs.addSlot(102, 35))
                 .register();
-        ReiMachineRecipes.registerMultiblockShape("matter_transformer_crafter", MatterTransformerCrafterShape.get());
-
-
-
-
-
     }
 }

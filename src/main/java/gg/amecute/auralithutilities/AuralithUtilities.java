@@ -11,7 +11,6 @@ import gg.amecute.auralithutilities.Registries.AuralithMachines;
 import gg.amecute.auralithutilities.Registries.AuralithRecipeType;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
@@ -30,15 +29,21 @@ public class AuralithUtilities
     public static final Logger LOGGER = LoggerFactory.getLogger(AuralithUtilities.class);
     public static final String MODID = "auralithcore";
 
-    public AuralithUtilities(IEventBus modEventBus, ModContainer modContainer) {
+    public AuralithUtilities(IEventBus modEventBus, ModContainer modContainer)
+    {
         modEventBus.addListener(this::commonSetup);
-        NeoForge.EVENT_BUS.register(this);
+
+        NeoForge.EVENT_BUS.addListener(this::onServerStarting);
+        NeoForge.EVENT_BUS.addListener(AuralithUtilities::onAddReloadListener);
+        NeoForge.EVENT_BUS.addListener(AuralithUtilities::onRegisterCommands);
+
         NeoForge.EVENT_BUS.register(MainMenuReplacer.class);
 
         AuralithRecipeType.register();
         AuralithEntities.ENTITY_TYPE.register(modEventBus);
         AuralithItems.ITEMS.register(modEventBus);
 
+        preloadStructures();
         AuralithMachines.BLOCKS.register(modEventBus);
         AuralithMachines.registerBlockEntities();
 
@@ -46,14 +51,14 @@ public class AuralithUtilities
         modContainer.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
     }
 
-    private void commonSetup(FMLCommonSetupEvent event) {
+    private void commonSetup(FMLCommonSetupEvent event)
+    {
     }
 
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
+    private void onServerStarting(ServerStartingEvent event)
+    {
     }
 
-    @SubscribeEvent
     public static void onAddReloadListener(AddReloadListenerEvent event)
     {
         MultiblockStructureManager manager = new MultiblockStructureManager();
@@ -63,7 +68,6 @@ public class AuralithUtilities
         AuralithUtilities.LOGGER.info("Registered MultiblockStructureManager");
     }
 
-    @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event)
     {
         MultiblockCommands.register(event.getDispatcher());
@@ -73,6 +77,16 @@ public class AuralithUtilities
     public static ResourceLocation resGet(String path)
     {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    }
+
+    private void preloadStructures()
+    {
+        try
+        {
+            MultiblockStructureManager manager = new MultiblockStructureManager();
+            setStructureManager(manager);
+        }
+        catch (Exception ignored) { }
     }
 
     public static MultiblockStructureManager getStructureManager() { return structureManager; }

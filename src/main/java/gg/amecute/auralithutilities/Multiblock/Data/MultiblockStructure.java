@@ -27,17 +27,22 @@ public record MultiblockStructure
 {
 	public static final Codec<MultiblockStructure> CODEC = RecordCodecBuilder.create(instance ->
 			instance.group(
-					ResourceLocation.CODEC.fieldOf("id").forGetter(MultiblockStructure::id),
-					Codec.STRING.fieldOf("name").forGetter(MultiblockStructure::name),
-					Codec.STRING.fieldOf("casing").forGetter(MultiblockStructure::casing),
-					MultiblockType.CODEC.fieldOf("type").forGetter(MultiblockStructure::type),
-					Vec3i.CODEC.fieldOf("size").forGetter(MultiblockStructure::size),
+					ResourceLocation.CODEC.optionalFieldOf("id", ResourceLocation.fromNamespaceAndPath("unknown", "unknown")).forGetter(MultiblockStructure::id),
+					Codec.STRING.optionalFieldOf("name", "Unknown").forGetter(MultiblockStructure::name),
+					Codec.STRING.optionalFieldOf("casing", "modern_industrialization:steel_machine_casing").forGetter(MultiblockStructure::casing),
+					MultiblockType.CODEC.optionalFieldOf("type", MultiblockType.MACHINE).forGetter(MultiblockStructure::type),
+					Vec3i.CODEC.optionalFieldOf("size", new Vec3i(3, 3, 3)).forGetter(MultiblockStructure::size),
 					Codec.unboundedMap(Codec.STRING.xmap(s -> s.charAt(0), c -> String.valueOf(c)),
 							BlockDefinition.CODEC).fieldOf("palette").forGetter(MultiblockStructure::palette),
 					Codec.list(Codec.STRING.listOf()).fieldOf("layers").forGetter(MultiblockStructure::layers),
 					ModifierConfig.CODEC.optionalFieldOf("modifier_config").forGetter(MultiblockStructure::modifierConfig),
 					AnimationConfig.CODEC.optionalFieldOf("animation_config").forGetter(MultiblockStructure::animationConfig),
-					RecipeConfig.CODEC.fieldOf("recipe_config").forGetter(MultiblockStructure::recipeConfig)
+					RecipeConfig.CODEC.optionalFieldOf("recipe_config", new RecipeConfig(
+							ResourceLocation.fromNamespaceAndPath("unknown", "unknown"),
+							1024L,
+							100000L,
+							200
+					)).forGetter(MultiblockStructure::recipeConfig)
 			).apply(instance, MultiblockStructure::new)
 	);
 
@@ -77,5 +82,39 @@ public record MultiblockStructure
 		}
 		return Optional.empty();
 	}
-}
 
+	public static Vec3i calculateSize(List<List<String>> layers)
+	{
+		if (layers.isEmpty()) return new Vec3i(0, 0, 0);
+
+		int y = layers.size();
+		int z = layers.get(0).size();
+		int x = layers.get(0).isEmpty() ? 0 : layers.get(0).get(0).length();
+
+		return new Vec3i(x, y, z);
+	}
+
+	public static String deriveCasing(Map<Character, BlockDefinition> palette)
+	{
+		String fallback = "modern_industrialization:steel_machine_casing";
+
+		for (Map.Entry<Character, BlockDefinition> entry : palette.entrySet())
+		{
+			BlockDefinition def = entry.getValue();
+			if (def == null || def.blockId() == null) continue;
+
+			ResourceLocation blockId = def.blockId();
+			String path = blockId.getPath();
+
+			if (path.endsWith("_machine_casing") && !path.contains("pipe"))
+				return blockId.toString();
+		}
+
+		return fallback;
+	}
+
+	public static ResourceLocation deriveId(String filename, String modid)
+	{
+		return ResourceLocation.fromNamespaceAndPath(modid, filename);
+	}
+}

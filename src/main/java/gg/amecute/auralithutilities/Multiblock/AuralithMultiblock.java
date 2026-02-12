@@ -4,14 +4,18 @@ import aztech.modern_industrialization.machines.BEP;
 import aztech.modern_industrialization.machines.blockentities.multiblocks.AbstractElectricCraftingMultiblockBlockEntity;
 import aztech.modern_industrialization.machines.components.OrientationComponent;
 import aztech.modern_industrialization.machines.models.MachineCasing;
+import aztech.modern_industrialization.machines.models.MachineCasings;
 import aztech.modern_industrialization.machines.multiblocks.ShapeTemplate;
 import gg.amecute.auralithutilities.Animation.AnimationSystem;
 import gg.amecute.auralithutilities.AuralithUtilities;
 import gg.amecute.auralithutilities.Multiblock.Data.MultiblockStructure;
+import gg.amecute.auralithutilities.Multiblock.Data.MultiblockStructureManager;
 import gg.amecute.auralithutilities.Multiblock.Data.ShapeConverter;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AuralithMultiblock extends AbstractElectricCraftingMultiblockBlockEntity
 {
@@ -19,41 +23,105 @@ public abstract class AuralithMultiblock extends AbstractElectricCraftingMultibl
     private AnimationSystem animationType;
 
     protected final ResourceLocation structureId;
-    protected final MultiblockStructure structure;
+    protected MultiblockStructure structure;
     protected final MachineCasing casing;
+
+    private static final Map<ResourceLocation, ShapeTemplate[]> SHAPE_REGISTRY = new ConcurrentHashMap<>();
 
     public AuralithMultiblock(
         BEP bep,
         ResourceLocation structureId,
         OrientationComponent.Params params,
-        MachineCasing hatchCasing,
-        ShapeTemplate fallbackShape
+        MachineCasing hatchCasing
     )
     {
-        super(bep, structureId, params, new ShapeTemplate[]{ buildShape(structureId, fallbackShape) });
+        super(bep, structureId, params, getOrCreateShapes(structureId));
 
         this.structureId = structureId;
         this.casing = hatchCasing;
         this.structure = loadStructureFromManager(structureId).orElse(null);
     }
 
-    private static ShapeTemplate buildShape(ResourceLocation structureId, ShapeTemplate fallback)
+    /**
+     * Récupère ou crée les shapes pour un ID donné.
+     * Utilise le registry centralisé pour permettre les mises à jour dynamiques.
+     */
+    private static ShapeTemplate[] getOrCreateShapes(ResourceLocation structureId)
     {
-        Optional<MultiblockStructure> structureOpt = loadStructureFromManager(structureId);
+        return SHAPE_REGISTRY.computeIfAbsent(structureId, id -> {
+            Optional<MultiblockStructure> structureOpt = loadStructureFromManager(id);
 
-        if (structureOpt.isPresent())
+            if (structureOpt.isPresent())
+            {
+                try
+                {
+                    ShapeTemplate converted = ShapeConverter.convert(structureOpt.get());
+                    AuralithUtilities.LOGGER.info("Successfully loaded shape from datapack for: {}", id);
+                    return new ShapeTemplate[] { converted };
+                }
+                catch (Exception e)
+                {
+                    AuralithUtilities.LOGGER.error("Failed to convert structure {}", id, e);
+                }
+            }
+            else
+            {
+                AuralithUtilities.LOGGER.debug("Structure {} not yet loaded, creating empty shape placeholder", id);
+            }
+
+            // Retourner un shape vide temporaire qui sera remplacé au reload
+            return new ShapeTemplate[] { createEmptyShape() };
+        });
+    }
+
+    /**
+     * Crée un shape vide temporaire pour les structures pas encore chargées.
+     */
+    private static ShapeTemplate createEmptyShape()
+    {
+        return new ShapeTemplate.Builder(MachineCasings.STEEL).build();
+    }
+
+    /**
+     * Appelé par le MultiblockStructureManager quand les structures sont rechargées.
+     * Met à jour le registry global pour toutes les instances.
+     */
+    public static void reloadAllShapes(MultiblockStructureManager manager)
+    {
+        AuralithUtilities.LOGGER.info("Reloading all multiblock shapes from datapack...");
+
+        for (MultiblockStructure structure : manager.getAllStructures())
         {
+            ResourceLocation id = structure.id();
+
             try
             {
-                return ShapeConverter.convert(structureOpt.get());
+                ShapeTemplate converted = ShapeConverter.convert(structure);
+                SHAPE_REGISTRY.put(id, new ShapeTemplate[] { converted });
+                AuralithUtilities.LOGGER.info("Reloaded shape for: {}", id);
             }
             catch (Exception e)
             {
-                AuralithUtilities.LOGGER.error("Failed to convert structure {}, using fallback", structureId, e);
+                AuralithUtilities.LOGGER.error("Failed to reload shape for {}", id, e);
             }
         }
 
-        return fallback;
+        AuralithUtilities.LOGGER.info("Shape reload complete: {} shapes updated", SHAPE_REGISTRY.size());
+    }
+
+    /**
+     * Met à jour la structure locale depuis le manager.
+     * Appelé après le reload des shapes.
+     */
+    public void updateStructure()
+    {
+        Optional<MultiblockStructure> newStructure = loadStructureFromManager(structureId);
+
+        if (newStructure.isPresent())
+        {
+            structure = newStructure.get();
+            AuralithUtilities.LOGGER.debug("Updated structure data for {}", structureId);
+        }
     }
 
     private static Optional<MultiblockStructure> loadStructureFromManager(ResourceLocation id)
