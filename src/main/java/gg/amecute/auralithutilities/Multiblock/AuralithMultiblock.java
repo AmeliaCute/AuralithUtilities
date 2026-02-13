@@ -42,10 +42,6 @@ public abstract class AuralithMultiblock extends AbstractElectricCraftingMultibl
         this.structure = loadStructureFromManager(structureId).orElse(null);
     }
 
-    /**
-     * Récupère ou crée les shapes pour un ID donné.
-     * Utilise le registry centralisé pour permettre les mises à jour dynamiques.
-     */
     private static ShapeTemplate[] getOrCreateShapes(ResourceLocation structureId)
     {
         return SHAPE_REGISTRY.computeIfAbsent(structureId, id -> {
@@ -69,23 +65,15 @@ public abstract class AuralithMultiblock extends AbstractElectricCraftingMultibl
                 AuralithUtilities.LOGGER.debug("Structure {} not yet loaded, creating empty shape placeholder", id);
             }
 
-            // Retourner un shape vide temporaire qui sera remplacé au reload
             return new ShapeTemplate[] { createEmptyShape() };
         });
     }
 
-    /**
-     * Crée un shape vide temporaire pour les structures pas encore chargées.
-     */
     private static ShapeTemplate createEmptyShape()
     {
         return new ShapeTemplate.Builder(MachineCasings.STEEL).build();
     }
 
-    /**
-     * Appelé par le MultiblockStructureManager quand les structures sont rechargées.
-     * Met à jour le registry global pour toutes les instances.
-     */
     public static void reloadAllShapes(MultiblockStructureManager manager)
     {
         AuralithUtilities.LOGGER.info("Reloading all multiblock shapes from datapack...");
@@ -109,10 +97,6 @@ public abstract class AuralithMultiblock extends AbstractElectricCraftingMultibl
         AuralithUtilities.LOGGER.info("Shape reload complete: {} shapes updated", SHAPE_REGISTRY.size());
     }
 
-    /**
-     * Met à jour la structure locale depuis le manager.
-     * Appelé après le reload des shapes.
-     */
     public void updateStructure()
     {
         Optional<MultiblockStructure> newStructure = loadStructureFromManager(structureId);

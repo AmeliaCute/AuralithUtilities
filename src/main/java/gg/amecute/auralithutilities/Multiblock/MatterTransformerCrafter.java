@@ -5,7 +5,7 @@ import aztech.modern_industrialization.machines.components.OrientationComponent;
 import aztech.modern_industrialization.machines.models.MachineCasing;
 import aztech.modern_industrialization.machines.recipe.MachineRecipeType;
 import gg.amecute.auralithutilities.Animation.AnimationSystem;
-import gg.amecute.auralithutilities.Animation.Impl.MatterCraftingAnim;
+import gg.amecute.auralithutilities.Animation.Impl.LaserConvergenceAnimation;
 import gg.amecute.auralithutilities.AuralithUtilities;
 import gg.amecute.auralithutilities.Registries.AuralithRecipeType;
 import net.minecraft.resources.ResourceLocation;
@@ -81,7 +81,7 @@ public class MatterTransformerCrafter extends AuralithMultiblock
             );
         }
 
-        return new MatterCraftingAnim(this.level, animationPos, 1.2f, interiorColor, outlineColor);
+        return new LaserConvergenceAnimation(this.level, animationPos, 1.2f, interiorColor, outlineColor);
     }
 
     private int parseColor(String colorStr)

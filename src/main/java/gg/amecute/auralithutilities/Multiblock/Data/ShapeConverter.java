@@ -2,6 +2,8 @@ package gg.amecute.auralithutilities.Multiblock.Data;
 
 import aztech.modern_industrialization.machines.models.MachineCasings;
 import aztech.modern_industrialization.machines.multiblocks.HatchFlags;
+import aztech.modern_industrialization.machines.multiblocks.HatchType;
+import aztech.modern_industrialization.machines.multiblocks.HatchTypes;
 import aztech.modern_industrialization.machines.multiblocks.ShapeTemplate;
 import aztech.modern_industrialization.machines.multiblocks.SimpleMember;
 import gg.amecute.auralithutilities.AuralithUtilities;
@@ -12,9 +14,6 @@ import net.minecraft.world.level.block.Block;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-import static aztech.modern_industrialization.machines.multiblocks.HatchTypes.*;
 
 public class ShapeConverter
 {
@@ -40,19 +39,23 @@ public class ShapeConverter
 					continue;
 				}
 
-				Block block = BuiltInRegistries.BLOCK.get(def.blockId());
-				SimpleMember member = SimpleMember.forBlock(() -> block);
-				memberMap.put(key, member);
+				if(def.hatchFlags().isPresent() && !def.hatchFlags().get().isEmpty())
+				{
+					HatchFlags flags = parseHatchFlags(def.hatchFlags().get());
+					Block block = BuiltInRegistries.BLOCK.get(def.blockId());
+					SimpleMember member = SimpleMember.forBlock(() -> block);
+					memberMap.put(key, member);
+					hatchMap.put(key, flags);
 
-				if(def.hatchType() != null && !def.hatchType().isEmpty())
-				{
-					HatchFlags flags = parseHatchFlags(def.hatchType());
-					hatchMap.put(key, flags);
+					AuralithUtilities.LOGGER.debug("Registered hatch '{}' with block {} and {} flags", key, def.blockId(), def.hatchFlags().get().size());
 				}
-				else if(def.hatchType().isPresent())
+				else
 				{
-					HatchFlags flags = parseHatchType(def.hatchType().get());
-					hatchMap.put(key, flags);
+					Block block = BuiltInRegistries.BLOCK.get(def.blockId());
+					SimpleMember member = SimpleMember.forBlock(() -> block);
+					memberMap.put(key, member);
+
+					AuralithUtilities.LOGGER.debug("Registered block '{}': {}", key, def.blockId());
 				}
 			}
 
@@ -89,28 +92,14 @@ public class ShapeConverter
 		return miShape;
 	}
 
-	private static HatchFlags parseHatchFlags(Optional<String> flagList)
+	private static HatchFlags parseHatchFlags(List<String> flagList)
 	{
 		HatchFlags.Builder builder = new HatchFlags.Builder();
 
-		for (String flag : flagList.stream().toList())
+		for (String flag : flagList)
 		{
 			String cleanFlag = flag.contains(":") ? flag.substring(flag.indexOf(':') + 1) : flag;
 			addHatchType(builder, cleanFlag);
-		}
-
-		return builder.build();
-	}
-
-	private static HatchFlags parseHatchType(String type)
-	{
-		HatchFlags.Builder builder = new HatchFlags.Builder();
-
-		String[] types = type.split(",");
-		for (String t : types)
-		{
-			String trimmed = t.trim().toLowerCase();
-			addHatchType(builder, trimmed);
 		}
 
 		return builder.build();
@@ -120,45 +109,29 @@ public class ShapeConverter
 	{
 		String normalized = typeName.trim().toLowerCase();
 
-		switch (normalized)
+		try
 		{
-			case "any" -> builder
-					.with(ITEM_INPUT)
-					.with(ITEM_OUTPUT)
-					.with(FLUID_INPUT)
-					.with(FLUID_OUTPUT)
-					.with(ENERGY_INPUT);
+			HatchType hatchType;
 
-			case "item_input" -> builder.with(ITEM_INPUT);
-			case "item_output" -> builder.with(ITEM_OUTPUT);
-			case "fluid_input" -> builder.with(FLUID_INPUT);
-			case "fluid_output" -> builder.with(FLUID_OUTPUT);
-			case "energy_input" -> builder.with(ENERGY_INPUT);
-			case "energy_output" -> builder.with(ENERGY_OUTPUT);
-
-			case "nuclear_item" -> {
-				try {
-					builder.with(ITEM_INPUT).with(ITEM_OUTPUT);
-				} catch (Exception e) {
-					AuralithUtilities.LOGGER.debug("Nuclear item hatch type not available");
+			if (typeName.contains(":")) hatchType = HatchTypes.get(typeName);
+			else
+			{
+				try
+				{
+					hatchType = HatchTypes.get("modern_industrialization:" + normalized);
 				}
-			}
-			case "nuclear_fluid" -> {
-				try {
-					builder.with(FLUID_INPUT).with(FLUID_OUTPUT);
-				} catch (Exception e) {
-					AuralithUtilities.LOGGER.debug("Nuclear fluid hatch type not available");
-				}
-			}
-			case "large_tank" -> {
-				try {
-					builder.with(FLUID_INPUT).with(FLUID_OUTPUT);
-				} catch (Exception e) {
-					AuralithUtilities.LOGGER.debug("Large tank hatch type not available");
+				catch (IllegalArgumentException e)
+				{
+					hatchType = HatchTypes.get(normalized);
 				}
 			}
 
-			default -> AuralithUtilities.LOGGER.warn("Unknown hatch type: {}", normalized);
+			builder.with(hatchType);
+			AuralithUtilities.LOGGER.debug("Added hatch type: {}", typeName);
+		}
+		catch (IllegalArgumentException e)
+		{
+			AuralithUtilities.LOGGER.warn("Unknown or unavailable hatch type: {} - {}", typeName, e.getMessage());
 		}
 	}
 }

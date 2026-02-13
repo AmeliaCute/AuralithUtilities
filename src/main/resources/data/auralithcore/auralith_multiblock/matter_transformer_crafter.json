@@ -17,17 +17,12 @@
       "controller": true
     },
     "H": {
-      "block": "modern_industrialization:steel_item_input_hatch",
+      "block": "modern_industrialization:steel_machine_casing",
       "hatch_flags": [
-        "modern_industrialization:item_input",
-        "modern_industrialization:item_output",
-        "modern_industrialization:fluid_input",
-        "modern_industrialization:fluid_output",
-        "modern_industrialization:energy_input",
-        "modern_industrialization:energy_output",
-        "modern_industrialization:nuclear_item",
-        "modern_industrialization:nuclear_fluid",
-        "modern_industrialization:large_tank"
+        "item_input",
+        "item_output",
+        "energy_input",
+        "energy_output"
       ]
     },
     "a": {
