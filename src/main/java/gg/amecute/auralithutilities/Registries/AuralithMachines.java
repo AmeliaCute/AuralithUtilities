@@ -1,17 +1,12 @@
 package gg.amecute.auralithutilities.Registries;
 
-import aztech.modern_industrialization.compat.rei.machines.ReiMachineRecipes;
 import aztech.modern_industrialization.machines.MachineBlockEntity;
-import aztech.modern_industrialization.machines.guicomponents.ProgressBar;
-import aztech.modern_industrialization.machines.init.MIMachineRecipeTypes;
 import aztech.modern_industrialization.machines.init.MachineDefinition;
 import aztech.modern_industrialization.machines.init.MachineRegistrationHelper;
-import aztech.modern_industrialization.machines.init.MultiblockMachines;
 import aztech.modern_industrialization.machines.models.MachineCasings;
 import gg.amecute.auralithutilities.AuralithUtilities;
 import gg.amecute.auralithutilities.Block.MatterTransformerCrafterBlock;
 import gg.amecute.auralithutilities.Multiblock.MatterTransformerCrafter;
-import gg.amecute.auralithutilities.Multiblock.ShapeTemplate.MatterTransformerCrafterShape;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -35,6 +30,11 @@ public class AuralithMachines
                 return new MatterTransformerCrafterBlock(BlockBehaviour.Properties.of().sound(SoundType.LODESTONE));
             });
 
+  public static final Supplier<Block> FARMING_STATION =
+          BLOCKS.register("farming_station_controler", () ->
+          {
+            return new Block(BlockBehaviour.Properties.of().sound(SoundType.LODESTONE));
+          });
 
     public static MachineDefinition<MachineBlockEntity> MATTER_TRANSFORMER_CRAFTER_BE =
             MachineRegistrationHelper.registerMachine(

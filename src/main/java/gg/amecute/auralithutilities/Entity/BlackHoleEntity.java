@@ -2,141 +2,72 @@ package gg.amecute.auralithutilities.Entity;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoAnimatable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.RawAnimation;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.math.BigInteger;
-
-import static org.lwjgl.system.linux.X11.True;
-
-public class BlackHoleEntity extends Entity implements GeoEntity
+public class BlackHoleEntity extends Entity
 {
-    private static final EntityDataAccessor<Float>   DATA_SIZE   = SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> DATA_STABLE = SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.BOOLEAN);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private static final EntityDataAccessor<Float> DATA_SIZE = SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> DATA_INTERIOR_COLOR = SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_OUTLINE_COLOR = SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> DATA_ROTATION = SynchedEntityData.defineId(BlackHoleEntity.class, EntityDataSerializers.FLOAT);
 
-    private boolean controlled  = false;
-    private float   mass        = 100.0f;
-    private Long    age         = 0L;
-    private float   temperature = 1.0f;
+    private boolean controlled = false;
+    private float rotationSpeed = 2.0f;
 
     public BlackHoleEntity(EntityType<?> entityType, Level level)
     {
         super(entityType, level);
-
         this.noPhysics = true;
         this.setNoGravity(true);
     }
 
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_SIZE, 1.0f);
+        builder.define(DATA_INTERIOR_COLOR, 0xFF000000);
+        builder.define(DATA_OUTLINE_COLOR, 0xFFFFFFFF);
+        builder.define(DATA_ROTATION, 0.0f);
+    }
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers)
+    protected void readAdditionalSaveData(CompoundTag tag)
     {
-        controllers.add(new AnimationController<>(this, "controller", 0, state->
-                state.setAndContinue(RawAnimation.begin().thenLoop("idle"))));
+        if (tag.contains("Size")) setSize(tag.getFloat("Size"));
+        if (tag.contains("InteriorColor")) setInteriorColor(tag.getInt("InteriorColor"));
+        if (tag.contains("OutlineColor")) setOutlineColor(tag.getInt("OutlineColor"));
+        if (tag.contains("Rotation")) setRotation(tag.getFloat("Rotation"));
+        if (tag.contains("RotationSpeed")) rotationSpeed = tag.getFloat("RotationSpeed");
+        if (tag.contains("Controlled")) controlled = tag.getBoolean("Controlled");
     }
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder)
+    protected void addAdditionalSaveData(CompoundTag tag)
     {
-        builder.define(DATA_SIZE, 2.0f);
-        builder.define(DATA_STABLE, true);
+        tag.putFloat("Size", getSize());
+        tag.putInt("InteriorColor", getInteriorColor());
+        tag.putInt("OutlineColor", getOutlineColor());
+        tag.putFloat("Rotation", getRotation());
+        tag.putFloat("RotationSpeed", rotationSpeed);
+        tag.putBoolean("Controlled", controlled);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compoundTag)
+    public void tick()
     {
-        if(compoundTag.contains("Size")) setSize(compoundTag.getFloat("Size"));
-
-        if(compoundTag.contains("Stable")) setStable(compoundTag.getBoolean("Stable"));
-
-        if(compoundTag.contains("Controlled")) setControlled(compoundTag.getBoolean("Controlled"));
-
-        if(compoundTag.contains("Mass")) mass = (compoundTag.getFloat("Mass"));
-
-        if(compoundTag.contains("Age")) age = (compoundTag.getLong("Age"));
-
-        if(compoundTag.contains("Temperature")) setTemperature(compoundTag.getFloat("Temperature"));
-    }
-
-    @Override
-    protected void addAdditionalSaveData(CompoundTag compoundTag)
-    {
-        compoundTag.putFloat("Size", getSize());
-        compoundTag.putBoolean("Stable", isStable());
-        compoundTag.putBoolean("Controlled", isControlled());
-        compoundTag.putFloat("Mass", getMass());
-        compoundTag.putLong("Age", getAge());
-        compoundTag.putFloat("Temperature", getTemperature());
-    }
-
-    @Override
-    public void tick() {
         super.tick();
-        age++;
 
-        if(!isStable())
-        {
-            float pulseSpeed = 1f;
-            float pulseAmount = (float) Math.sin(age * pulseSpeed) * 0.3f;
-            float baseSize = getSize();
-            float newSize = baseSize + pulseAmount * .25f;
-            setSize(newSize);
-
-            temperature = 1.0f / baseSize;
-        }
-        if(!isControlled() && !level().isClientSide) applyGravitationalPull();
-    }
-
-    public void applyGravitationalPull()
-    {
-        float pullRadius  = getSize() * 5.0f;
-        float pullStrengh = mass / 50.0f;
-
-        level().getEntities(this, getBoundingBox().inflate(pullRadius),
-                entity -> entity != this && !entity.isSpectator() && !entity.isSprinting()).forEach(
-                entity ->
-                {
-                    Vec3 toBlackHole = this.position().subtract(entity.position());
-                    double distance = Math.max(toBlackHole.length(), 0.2); // min distance = 0.2 to prevent division by 0
-                    Vec3 direction = toBlackHole.normalize();
-                    double force = pullStrengh / (distance * distance);
-                    Vec3 pullVelocity = direction.scale(force * 0.5);
-
-                    if(entity instanceof Player player)
-                    {
-                        Vec3 newVel = player.getDeltaMovement().add(pullVelocity);
-                        player.setDeltaMovement(newVel);
-                        player.hurtMarked = true;
-                    }
-                    else
-                        entity.setDeltaMovement(entity.getDeltaMovement().add(pullVelocity));
-                }
-        );
+        float currentRotation = getRotation();
+        setRotation((currentRotation + rotationSpeed) % 360.0f);
     }
 
     @Override
     public boolean isPickable()
     {
-        return true;
+        return false;
     }
 
     @Override
@@ -162,14 +93,54 @@ public class BlackHoleEntity extends Entity implements GeoEntity
         this.refreshDimensions();
     }
 
-    public boolean isStable()
+    public int getInteriorColor()
     {
-        return this.entityData.get(DATA_STABLE);
+        return this.entityData.get(DATA_INTERIOR_COLOR);
     }
 
-    public void setStable(boolean stable)
+    public void setInteriorColor(int argb)
     {
-        this.entityData.set(DATA_STABLE, stable);
+        this.entityData.set(DATA_INTERIOR_COLOR, argb);
+    }
+
+    public void setInteriorColor(int r, int g, int b, int a)
+    {
+        setInteriorColor((a << 24) | (r << 16) | (g << 8) | b);
+    }
+
+    public int getOutlineColor()
+    {
+        return this.entityData.get(DATA_OUTLINE_COLOR);
+    }
+
+    public void setOutlineColor(int argb)
+    {
+        this.entityData.set(DATA_OUTLINE_COLOR, argb);
+    }
+
+    public void setOutlineColor(int r, int g, int b, int a)
+    {
+        setOutlineColor((a << 24) | (r << 16) | (g << 8) | b);
+    }
+
+    public float getRotation()
+    {
+        return this.entityData.get(DATA_ROTATION);
+    }
+
+    public void setRotation(float rotation)
+    {
+        this.entityData.set(DATA_ROTATION, rotation);
+    }
+
+    public float getRotationSpeed()
+    {
+        return rotationSpeed;
+    }
+
+    public void setRotationSpeed(float speed)
+    {
+        this.rotationSpeed = speed;
     }
 
     public boolean isControlled()
@@ -182,25 +153,21 @@ public class BlackHoleEntity extends Entity implements GeoEntity
         this.controlled = controlled;
     }
 
-    public float getMass()
+    public static class Color
     {
-        return mass;
+        public final int r, g, b, a;
+
+        public Color(int argb)
+        {
+            this.a = (argb >> 24) & 0xFF;
+            this.r = (argb >> 16) & 0xFF;
+            this.g = (argb >> 8) & 0xFF;
+            this.b = argb & 0xFF;
+        }
+
+        public float rf() { return r / 255.0f; }
+        public float gf() { return g / 255.0f; }
+        public float bf() { return b / 255.0f; }
+        public float af() { return a / 255.0f; }
     }
-
-    public long getAge()
-    {
-        return age;
-    }
-
-    public float getTemperature()
-    {
-        return temperature;
-    }
-
-    public void setTemperature(float temperature)
-    {
-        this.temperature = temperature;
-    }
-
-
 }
