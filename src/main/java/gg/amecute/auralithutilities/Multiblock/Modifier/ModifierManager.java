@@ -13,24 +13,34 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class ModifierManager
+public final class ModifierManager
 {
-	private record AttachedModifier(
-			MultiblockStructure structure,
-			BlockPos origin,
-			Direction facing,
-			ModifierConfig.Direction attachmentSide
-	) {}
+	private static final class AttachedModifier
+	{
+		final MultiblockStructure structure;
+		final BlockPos origin;
+		final Direction facing;
+		final ModifierConfig.Direction attachmentSide;
+
+		AttachedModifier(MultiblockStructure structure, BlockPos origin, Direction facing, ModifierConfig.Direction attachmentSide)
+		{
+			this.structure = structure;
+			this.origin = origin;
+			this.facing = facing;
+			this.attachmentSide = attachmentSide;
+		}
+	}
 
 	private final Level level;
 	private final BlockPos machineOrigin;
 	private final Direction machineFacing;
 	private final MultiblockStructure machineStructure;
 
-	private final List<AttachedModifier> attachedModifiers = new ArrayList<>();
-	private final Map<String, Double> cachedModifiers = new HashMap<>();
+	private final List<AttachedModifier> attachedModifiers = new ArrayList<>(8);
+	private final Map<String, Double> cachedModifiers = new HashMap<>(8);
+	private final Map<ResourceLocation, Integer> typeCountCache = new HashMap<>(4);
+
 	private boolean dirty = true;
 
 	public ModifierManager(Level level, BlockPos machineOrigin, Direction machineFacing, MultiblockStructure machineStructure)
@@ -44,37 +54,62 @@ public class ModifierManager
 	public void scanModifiers(MultiblockStructureManager structureManager)
 	{
 		attachedModifiers.clear();
+		typeCountCache.clear();
 		dirty = true;
 
+		final String machineType = machineStructure.id().toString();
+		final List<MultiblockStructure> possibleModifiers =
+				structureManager.getCompatibleModifiers(machineType);
 
-		String machineType = machineStructure.id().toString();
-		List<MultiblockStructure> possibleModifiers = structureManager.getCompatibleModifiers(machineType);
+		final List<MultiblockValidator.DetectedModifier> detected =
+				MultiblockValidator.detectModifiers(
+						level,
+						machineOrigin,
+						machineFacing,
+						machineStructure,
+						possibleModifiers
+				);
 
-		List<MultiblockValidator.DetectedModifier> detected = MultiblockValidator.detectModifiers(
-			level,
-			machineOrigin,
-			machineFacing,
-			machineStructure,
-			possibleModifiers
-		);
+		final Map<ResourceLocation, List<MultiblockValidator.DetectedModifier>> byType = new HashMap<>(possibleModifiers.size());
 
-		Map<ResourceLocation, List<MultiblockValidator.DetectedModifier>> byType = detected.stream().collect(Collectors.groupingBy(d -> d.structure().id()));
-		for(Map.Entry<ResourceLocation, List<MultiblockValidator.DetectedModifier>> entry : byType.entrySet())
+		for (int i = 0, size = detected.size(); i < size; i++)
 		{
-			List<MultiblockValidator.DetectedModifier> ofType = entry.getValue();
-			int maxStacks = ofType.get(0).structure().modifierConfig().map(ModifierConfig::maxStacks).orElse(1);
-			int count = Math.min(ofType.size(), maxStacks);
+			final MultiblockValidator.DetectedModifier mod = detected.get(i);
+			final ResourceLocation id = mod.structure().id();
 
-			for(int i = 0; i < count; ++i)
+			List<MultiblockValidator.DetectedModifier> list = byType.get(id);
+			if (list == null)
 			{
-				MultiblockValidator.DetectedModifier mod = ofType.get(i);
+				list = new ArrayList<>(4);
+				byType.put(id, list);
+			}
+			list.add(mod);
+		}
+
+		for (Map.Entry<ResourceLocation, List<MultiblockValidator.DetectedModifier>> entry : byType.entrySet())
+		{
+			final List<MultiblockValidator.DetectedModifier> ofType = entry.getValue();
+			if (ofType.isEmpty()) continue;
+
+			final MultiblockValidator.DetectedModifier first = ofType.get(0);
+			final int maxStacks = first.structure().modifierConfig()
+					.map(ModifierConfig::maxStacks)
+					.orElse(1);
+
+			final int count = Math.min(ofType.size(), maxStacks);
+
+			for (int i = 0; i < count; i++)
+			{
+				final MultiblockValidator.DetectedModifier mod = ofType.get(i);
 				attachedModifiers.add(new AttachedModifier(
-					mod.structure(),
-					mod.origin(),
-					mod.facing(),
-					mod.attachmentSide()
+						mod.structure(),
+						mod.origin(),
+						mod.facing(),
+						mod.attachmentSide()
 				));
 			}
+
+			typeCountCache.put(entry.getKey(), count);
 		}
 	}
 
@@ -82,18 +117,16 @@ public class ModifierManager
 	{
 		return getModifier(type, 1.0);
 	}
-	
+
 	public double getModifier(String type, double defaultValue)
 	{
-		if(dirty) recalculateModifiers();
-
+		if (dirty) recalculateModifiers();
 		return cachedModifiers.getOrDefault(type, defaultValue);
 	}
 
 	public Map<String, Double> getAllModifiers()
 	{
-		if(dirty) recalculateModifiers();
-
+		if (dirty) recalculateModifiers();
 		return Collections.unmodifiableMap(cachedModifiers);
 	}
 
@@ -101,58 +134,120 @@ public class ModifierManager
 	{
 		cachedModifiers.clear();
 
-		Map<ResourceLocation, List<AttachedModifier>> byType = attachedModifiers.stream().collect(Collectors.groupingBy(m -> m.structure().id()));
+		final Map<ResourceLocation, List<AttachedModifier>> byType = new HashMap<>(attachedModifiers.size());
 
-		for(List<AttachedModifier> stack : byType.values())
+		for (int i = 0, size = attachedModifiers.size(); i < size; i++)
 		{
-			if(stack.isEmpty()) continue;
+			final AttachedModifier mod = attachedModifiers.get(i);
+			final ResourceLocation id = mod.structure.id();
 
-			AttachedModifier first = stack.get(0);
-			Map<String, Double> baseModifiers = first.structure.modifierConfig().map(ModifierConfig::modifiers).orElse(Map.of());
-
-			int stackCount = stack.size();
-
-			for(Map.Entry<String, Double> entry : baseModifiers.entrySet())
+			List<AttachedModifier> list = byType.get(id);
+			if (list == null)
 			{
-				String modType = entry.getKey();
-				double baseValue = entry.getValue();
+				list = new ArrayList<>(4);
+				byType.put(id, list);
+			}
 
-				double stackedValue = calculateStackedValue(modType, baseValue, stackCount);
-				cachedModifiers.merge(modType, stackedValue, (a,b) -> a * b);
+			list.add(mod);
+		}
+
+		for (Map.Entry<ResourceLocation, List<AttachedModifier>> entry : byType.entrySet())
+		{
+			final List<AttachedModifier> stack = entry.getValue();
+			if (stack.isEmpty()) continue;
+
+			final AttachedModifier first = stack.get(0);
+			final Map<String, Double> baseModifiers = first.structure.modifierConfig()
+					.map(ModifierConfig::modifiers)
+					.orElse(Collections.emptyMap());
+
+			final int stackCount = stack.size();
+
+			for (Map.Entry<String, Double> modEntry : baseModifiers.entrySet())
+			{
+				final String modType = modEntry.getKey();
+				final double baseValue = modEntry.getValue();
+
+				final double stackedValue = calculateStackedValue(modType, baseValue, stackCount);
+
+				final Double existing = cachedModifiers.get(modType);
+				if (existing != null) cachedModifiers.put(modType, existing * stackedValue);
+				else cachedModifiers.put(modType, stackedValue);
 			}
 		}
 
 		dirty = false;
 	}
 
-	private double calculateStackedValue(String modifierType, double baseValue, int stackCount)
+	private static double calculateStackedValue(String modifierType, double baseValue, int stackCount)
 	{
+		if (stackCount == 1)
+		{
+			return switch (modifierType)
+			{
+				case "speed" -> 1.0 + baseValue;
+				case "energy_consumption", "energy_efficiency" -> 1.0 + baseValue;
+				case "output_chance", "extra_output_chance" -> baseValue;
+				case "capacity" -> baseValue;
+				default -> baseValue;
+			};
+		}
+
 		return switch (modifierType)
 		{
 			case "speed" ->
 			{
 				double result = 1.0;
-				for (int i = 0; i < stackCount; i++) result *= (1.0 + baseValue * Math.pow(0.75, i));
+				double factor = baseValue;
+				final double decay = 0.75;
 
+				for (int i = 0; i < stackCount; i++)
+				{
+					result *= (1.0 + factor);
+					factor *= decay;
+				}
 				yield result;
 			}
 
 			case "energy_consumption", "energy_efficiency" -> 1.0 + (baseValue * stackCount);
+
 			case "output_chance", "extra_output_chance" -> Math.min(1.0, baseValue * stackCount);
-			case "capacity" -> Math.pow(baseValue, stackCount);
-			default -> Math.pow(baseValue, stackCount);
+
+			case "capacity" -> fastPow(baseValue, stackCount);
+
+			default -> fastPow(baseValue, stackCount);
 		};
+	}
+
+	private static double fastPow(double base, int exp)
+	{
+		if (exp == 0) return 1.0;
+		if (exp == 1) return base;
+		if (exp == 2) return base * base;
+
+		double result = 1.0;
+		double current = base;
+
+		while (exp > 0)
+		{
+			if ((exp & 1) == 1) result *= current;
+
+			current *= current;
+			exp >>= 1;
+		}
+
+		return result;
 	}
 
 	public long applyEnergyModifier(long baseEnergy)
 	{
-		double modifier = getModifier("energy_consumption", 1.0);
+		final double modifier = getModifier("energy_consumption", 1.0);
 		return Math.round(baseEnergy * modifier);
 	}
 
 	public int applySpeedModifier(int baseTime)
 	{
-		double modifier = getModifier("speed", 1.0);
+		final double modifier = getModifier("speed", 1.0);
 		return Math.max(1, (int) Math.round(baseTime / modifier));
 	}
 
@@ -161,7 +256,9 @@ public class ModifierManager
 		double chance = getModifier("extra_output_chance", 0.0);
 		int extra = 0;
 
-		while (chance > 0)
+		if (chance <= 0.0) return baseCount;
+
+		while (chance > 0.0)
 		{
 			if (Math.random() < Math.min(chance, 1.0)) extra++;
 
@@ -178,31 +275,36 @@ public class ModifierManager
 
 	public int getModifierCount(ResourceLocation type)
 	{
-		return (int) attachedModifiers.stream().filter(m -> m.structure.id().equals(type)).count();
+		return typeCountCache.getOrDefault(type, 0);
 	}
 
 	public boolean validateAll()
 	{
-		for (AttachedModifier modifier : attachedModifiers)
+		for (int i = 0, size = attachedModifiers.size(); i < size; i++)
 		{
-			var result = MultiblockValidator.validate(level, modifier.origin, modifier.structure, modifier.facing);
+			final AttachedModifier modifier = attachedModifiers.get(i);
+			final MultiblockValidator.ValidationResult result =
+					MultiblockValidator.validate(level, modifier.origin, modifier.structure, modifier.facing);
+
 			if (!result.valid()) return false;
 		}
-
 		return true;
 	}
 
 	public void writeNbt(CompoundTag tag)
 	{
-		ListTag list = new ListTag();
+		final ListTag list = new ListTag();
 
-		for (AttachedModifier modifier : attachedModifiers)
+		for (int i = 0, size = attachedModifiers.size(); i < size; i++)
 		{
-			CompoundTag modTag = new CompoundTag();
+			final AttachedModifier modifier = attachedModifiers.get(i);
+			final CompoundTag modTag = new CompoundTag();
+
 			modTag.putString("id", modifier.structure.id().toString());
 			modTag.putLong("origin", modifier.origin.asLong());
 			modTag.putInt("facing", modifier.facing.get3DDataValue());
 			modTag.putString("side", modifier.attachmentSide.name());
+
 			list.add(modTag);
 		}
 
@@ -212,37 +314,29 @@ public class ModifierManager
 	public void readNbt(CompoundTag tag, MultiblockStructureManager structureManager)
 	{
 		attachedModifiers.clear();
+		typeCountCache.clear();
 		dirty = true;
 
 		if (!tag.contains("attached_modifiers")) return;
+		final ListTag list = tag.getList("attached_modifiers", Tag.TAG_COMPOUND);
+		final int size = list.size();
 
-		ListTag list = tag.getList("attached_modifiers", Tag.TAG_COMPOUND);
+		if (attachedModifiers instanceof ArrayList) ((ArrayList<?>) attachedModifiers).ensureCapacity(size);
 
-		for (int i = 0; i < list.size(); i++)
+		for (int i = 0; i < size; i++)
 		{
-			CompoundTag modTag = list.getCompound(i);
+			final CompoundTag modTag = list.getCompound(i);
 
-			ResourceLocation id = ResourceLocation.parse(modTag.getString("id"));
-			BlockPos origin = BlockPos.of(modTag.getLong("origin"));
-			Direction facing = Direction.from3DDataValue(modTag.getInt("facing"));
-			ModifierConfig.Direction side = ModifierConfig.Direction.valueOf(modTag.getString("side"));
+			final ResourceLocation id = ResourceLocation.parse(modTag.getString("id"));
+			final BlockPos origin = BlockPos.of(modTag.getLong("origin"));
+			final Direction facing = Direction.from3DDataValue(modTag.getInt("facing"));
+			final ModifierConfig.Direction side = ModifierConfig.Direction.valueOf(modTag.getString("side"));
 
-			structureManager.getStructure(id).ifPresent(structure -> { attachedModifiers.add(new AttachedModifier(structure, origin, facing, side)); });
+			structureManager.getStructure(id).ifPresent(structure ->
+			{
+				attachedModifiers.add(new AttachedModifier(structure, origin, facing, side));
+				typeCountCache.merge(id, 1, Integer::sum);
+			});
 		}
-	}
-
-	public List<String> getDebugInfo()
-	{
-		List<String> info = new ArrayList<>();
-		info.add("Attached Modifiers: " + attachedModifiers.size());
-
-		Map<ResourceLocation, Long> counts = attachedModifiers.stream().collect(Collectors.groupingBy(m -> m.structure.id(), Collectors.counting()));
-
-		for (Map.Entry<ResourceLocation, Long> entry : counts.entrySet()) info.add("  - " + entry.getKey() + " x" + entry.getValue());
-
-		info.add("Active Modifiers:");
-		for (Map.Entry<String, Double> entry : getAllModifiers().entrySet()) info.add(String.format("  - %s: %.2f%%", entry.getKey(), entry.getValue() * 100));
-
-		return info;
 	}
 }

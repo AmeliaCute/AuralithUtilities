@@ -15,62 +15,64 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ShapeConverter
+public final class ShapeConverter
 {
+	private static final Map<String, HatchType> HATCH_TYPE_CACHE = new HashMap<>(32);
+
 	public static ShapeTemplate convert(MultiblockStructure structure)
 	{
 		try
 		{
-			String[][] miShape = buildMIShape(structure);
+			final String[][] miShape = buildMIShapeOptimized(structure);
 
-			miShape = ShapeFixer.transposeLayers(miShape);
-			miShape = ShapeFixer.reverseEachRowInAll(miShape);
+			String[][] transformed = ShapeFixer.transposeLayers(miShape);
+			transformed = ShapeFixer.reverseEachRowInAll(transformed);
 
-			Map<Character, SimpleMember> memberMap = new HashMap<>();
-			Map<Character, HatchFlags> hatchMap = new HashMap<>();
+			final Map<Character, BlockDefinition> palette = structure.palette();
+			final Map<Character, SimpleMember> memberMap = new HashMap<>(palette.size());
+			final Map<Character, HatchFlags> hatchMap = new HashMap<>(palette.size() / 4);
 
-			for(Map.Entry<Character, BlockDefinition> entry : structure.palette().entrySet())
+			for (Map.Entry<Character, BlockDefinition> entry : palette.entrySet())
 			{
-				char key = entry.getKey();
-				BlockDefinition def = entry.getValue();
+				final char key = entry.getKey();
+				final BlockDefinition def = entry.getValue();
 
-				if (key == '#' || key == ' ')
+				if (key == '#' || key == ' ') continue;
+
+				final Block block = BuiltInRegistries.BLOCK.get(def.blockId());
+				final SimpleMember member = SimpleMember.forBlock(() -> block);
+				memberMap.put(key, member);
+
+				if (def.hatchFlags().isPresent())
 				{
-					continue;
-				}
+					final List<String> flags = def.hatchFlags().get();
+					if (!flags.isEmpty())
+					{
+						final HatchFlags hatchFlags = parseHatchFlagsOptimized(flags);
+						hatchMap.put(key, hatchFlags);
 
-				if(def.hatchFlags().isPresent() && !def.hatchFlags().get().isEmpty())
+						AuralithUtilities.LOGGER.debug("Registered hatch '{}' with block {} and {} flags",
+								key, def.blockId(), flags.size());
+					}
+				} else
 				{
-					HatchFlags flags = parseHatchFlags(def.hatchFlags().get());
-					Block block = BuiltInRegistries.BLOCK.get(def.blockId());
-					SimpleMember member = SimpleMember.forBlock(() -> block);
-					memberMap.put(key, member);
-					hatchMap.put(key, flags);
-
-					AuralithUtilities.LOGGER.debug("Registered hatch '{}' with block {} and {} flags", key, def.blockId(), def.hatchFlags().get().size());
-				}
-				else
-				{
-					Block block = BuiltInRegistries.BLOCK.get(def.blockId());
-					SimpleMember member = SimpleMember.forBlock(() -> block);
-					memberMap.put(key, member);
-
 					AuralithUtilities.LOGGER.debug("Registered block '{}': {}", key, def.blockId());
 				}
 			}
 
-			ShapeTemplate.LayeredBuilder builder = new ShapeTemplate.LayeredBuilder(MachineCasings.get(structure.casing()), miShape);
+			final ShapeTemplate.LayeredBuilder builder = new ShapeTemplate.LayeredBuilder(MachineCasings.get(structure.casing()), transformed);
 
-			for(Map.Entry<Character, SimpleMember> entry : memberMap.entrySet())
+			for (Map.Entry<Character, SimpleMember> entry : memberMap.entrySet())
 			{
-				char key = entry.getKey();
-				SimpleMember member = entry.getValue();
-				HatchFlags hatches = hatchMap.get(key);
+				final char key = entry.getKey();
+				final SimpleMember member = entry.getValue();
+				final HatchFlags hatches = hatchMap.get(key);
 
 				builder.key(key, member, hatches);
 			}
 
 			return builder.build();
+
 		} catch (Exception e)
 		{
 			AuralithUtilities.LOGGER.error("Failed to convert structure: {}", structure.id(), e);
@@ -78,58 +80,75 @@ public class ShapeConverter
 		}
 	}
 
-	private static String[][] buildMIShape(MultiblockStructure structure)
+	private static String[][] buildMIShapeOptimized(MultiblockStructure structure)
 	{
-		List<List<String>> layers = structure.layers();
-		String[][] miShape = new String[layers.size()][];
+		final List<List<String>> layers = structure.layers();
+		final int layerCount = layers.size();
+		final String[][] miShape = new String[layerCount][];
 
-		for (int y = 0; y < layers.size(); y++)
+		for (int y = 0; y < layerCount; y++)
 		{
-			List<String> layer = layers.get(y);
-			miShape[y] = layer.toArray(new String[0]);
+			final List<String> layer = layers.get(y);
+			miShape[y] = layer.toArray(new String[layer.size()]);
 		}
 
 		return miShape;
 	}
 
-	private static HatchFlags parseHatchFlags(List<String> flagList)
+	private static HatchFlags parseHatchFlagsOptimized(List<String> flagList)
 	{
-		HatchFlags.Builder builder = new HatchFlags.Builder();
+		final HatchFlags.Builder builder = new HatchFlags.Builder();
 
-		for (String flag : flagList)
+		for (int i = 0, size = flagList.size(); i < size; i++)
 		{
-			String cleanFlag = flag.contains(":") ? flag.substring(flag.indexOf(':') + 1) : flag;
-			addHatchType(builder, cleanFlag);
+			final String flag = flagList.get(i);
+
+			final String cleanFlag;
+			final int colonIdx = flag.indexOf(':');
+			if (colonIdx >= 0) cleanFlag = flag.substring(colonIdx + 1);
+			else cleanFlag = flag;
+
+			addHatchTypeOptimized(builder, cleanFlag);
 		}
 
 		return builder.build();
 	}
 
-	private static void addHatchType(HatchFlags.Builder builder, String typeName)
+	private static void addHatchTypeOptimized(HatchFlags.Builder builder, String typeName)
 	{
-		String normalized = typeName.trim().toLowerCase();
+		HatchType cached = HATCH_TYPE_CACHE.get(typeName);
+		if (cached != null)
+		{
+			builder.with(cached);
+			return;
+		}
+
+		final String normalized = typeName.trim().toLowerCase();
 
 		try
 		{
-			HatchType hatchType;
+			final HatchType hatchType;
+			HatchType hatchTypeTemp;
 
-			if (typeName.contains(":")) hatchType = HatchTypes.get(typeName);
+			if (typeName.indexOf(':') >= 0)  hatchTypeTemp = HatchTypes.get(typeName);
 			else
 			{
 				try
 				{
-					hatchType = HatchTypes.get("modern_industrialization:" + normalized);
-				}
-				catch (IllegalArgumentException e)
+					hatchTypeTemp = HatchTypes.get("modern_industrialization:" + normalized);
+				} catch (IllegalArgumentException e)
 				{
-					hatchType = HatchTypes.get(normalized);
+					hatchTypeTemp = HatchTypes.get(normalized);
 				}
 			}
 
+			hatchType = hatchTypeTemp;
+			HATCH_TYPE_CACHE.put(typeName, hatchType);
+
 			builder.with(hatchType);
 			AuralithUtilities.LOGGER.debug("Added hatch type: {}", typeName);
-		}
-		catch (IllegalArgumentException e)
+
+		} catch (IllegalArgumentException e)
 		{
 			AuralithUtilities.LOGGER.warn("Unknown or unavailable hatch type: {} - {}", typeName, e.getMessage());
 		}

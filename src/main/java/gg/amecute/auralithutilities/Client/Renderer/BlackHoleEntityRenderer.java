@@ -11,104 +11,175 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
-public class BlackHoleEntityRenderer extends EntityRenderer<BlackHoleEntity> {
+public final class BlackHoleEntityRenderer extends EntityRenderer<BlackHoleEntity>
+{
 
-    private static final int SEGMENTS = 24; // Quality
+    private static final int SEGMENTS = 24;
+    private static final int VERTEX_COUNT = (SEGMENTS + 1) * SEGMENTS * 2;
+
+    private static final SphereGeometry GEOMETRY = new SphereGeometry(SEGMENTS);
+
+    private static RenderType cachedSolidType;
+    private static RenderType cachedEmissiveType;
 
     public BlackHoleEntityRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
-    public void render(BlackHoleEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight)
-    {
+    public void render(BlackHoleEntity entity, float entityYaw, float partialTick,
+                       PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+
         poseStack.pushPose();
 
-        float size = entity.getSize();
-        float rotation = entity.getRotation() + partialTick * entity.getRotationSpeed();
+        final float size = entity.getSize();
+        final float rotation = entity.getRotation() + partialTick * entity.getRotationSpeed();
 
         poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
         poseStack.mulPose(Axis.XP.rotationDegrees(rotation * 0.5f));
 
-        BlackHoleEntity.Color interior = new BlackHoleEntity.Color(entity.getInteriorColor());
-        BlackHoleEntity.Color outline = new BlackHoleEntity.Color(entity.getOutlineColor());
+        final BlackHoleEntity.Color interior = new BlackHoleEntity.Color(entity.getInteriorColor());
+        final BlackHoleEntity.Color outline = new BlackHoleEntity.Color(entity.getOutlineColor());
 
-        renderSphere(poseStack, bufferSource, size, interior.rf(), interior.gf(), interior.bf(), interior.af(),false, 0);
+        renderSphereOptimized(poseStack, bufferSource, size,
+            interior.rf(), interior.gf(), interior.bf(), interior.af(), false, 0);
 
-        float outlineSize = size + 0.1f;
-        renderSphere(poseStack, bufferSource, outlineSize,outline.rf(), outline.gf(), outline.bf(), outline.af(),true, 15728880);
+        final float outlineSize = size + 0.1f;
+        renderSphereOptimized(poseStack, bufferSource, outlineSize, outline.rf(), outline.gf(), outline.bf(), outline.af(), true, 15728880);
 
         poseStack.popPose();
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
 
-    private void renderSphere(PoseStack poseStack, MultiBufferSource bufferSource, float radius, float r, float g, float b, float a, boolean emissive, int light)
+    private void renderSphereOptimized(PoseStack poseStack, MultiBufferSource bufferSource, float radius, float r, float g, float b, float a, boolean emissive, int light)
     {
-        RenderType renderType = emissive ? createEmissiveRenderType() : createSolidRenderType();
+        final RenderType renderType = emissive ? getCachedEmissiveType() : getCachedSolidType();
+        final VertexConsumer consumer = bufferSource.getBuffer(renderType);
+        final PoseStack.Pose pose = poseStack.last();
 
-        VertexConsumer consumer = bufferSource.getBuffer(renderType);
-        PoseStack.Pose pose = poseStack.last();
+        final SphereGeometry geo = GEOMETRY;
+        final int segments = geo.segments;
 
-        for (int lat = 0; lat < SEGMENTS; lat++)
+        int vertexIndex = 0;
+        for (int lat = 0; lat < segments; lat++)
         {
-            float theta1 = lat * (float) Math.PI / SEGMENTS;
-            float theta2 = (lat + 1) * (float) Math.PI / SEGMENTS;
-
-            float sinTheta1 = (float) Math.sin(theta1);
-            float cosTheta1 = (float) Math.cos(theta1);
-            float sinTheta2 = (float) Math.sin(theta2);
-            float cosTheta2 = (float) Math.cos(theta2);
-
-            for (int lon = 0; lon <= SEGMENTS; lon++)
+            for (int lon = 0; lon <= segments; lon++)
             {
-                float phi = lon * 2 * (float) Math.PI / SEGMENTS;
-                float sinPhi = (float) Math.sin(phi);
-                float cosPhi = (float) Math.cos(phi);
+                {
+                    final float x = geo.positions[vertexIndex];
+                    final float y = geo.positions[vertexIndex + 1];
+                    final float z = geo.positions[vertexIndex + 2];
+                    final float nx = geo.normals[vertexIndex];
+                    final float ny = geo.normals[vertexIndex + 1];
+                    final float nz = geo.normals[vertexIndex + 2];
 
-                float x1 = radius * sinTheta1 * cosPhi;
-                float y1 = radius * cosTheta1;
-                float z1 = radius * sinTheta1 * sinPhi;
+                    consumer.addVertex(pose.pose(), x * radius, y * radius, z * radius)
+                        .setColor(r, g, b, a)
+                        .setUv(0, 0)
+                        .setOverlay(OverlayTexture.NO_OVERLAY)
+                        .setLight(light)
+                        .setNormal(pose, nx, ny, nz);
 
-                float x2 = radius * sinTheta2 * cosPhi;
-                float y2 = radius * cosTheta2;
-                float z2 = radius * sinTheta2 * sinPhi;
+                    vertexIndex += 3;
+                }
 
-                float nx1 = sinTheta1 * cosPhi;
-                float ny1 = cosTheta1;
-                float nz1 = sinTheta1 * sinPhi;
+                {
+                    final float x = geo.positions[vertexIndex];
+                    final float y = geo.positions[vertexIndex + 1];
+                    final float z = geo.positions[vertexIndex + 2];
+                    final float nx = geo.normals[vertexIndex];
+                    final float ny = geo.normals[vertexIndex + 1];
+                    final float nz = geo.normals[vertexIndex + 2];
 
-                float nx2 = sinTheta2 * cosPhi;
-                float ny2 = cosTheta2;
-                float nz2 = sinTheta2 * sinPhi;
+                    consumer.addVertex(pose.pose(), x * radius, y * radius, z * radius)
+                        .setColor(r, g, b, a)
+                        .setUv(0, 0)
+                        .setOverlay(OverlayTexture.NO_OVERLAY)
+                        .setLight(light)
+                        .setNormal(pose, nx, ny, nz);
 
-                vertex(consumer, pose, x1, y1, z1, nx1, ny1, nz1, r, g, b, a, light);
-                vertex(consumer, pose, x2, y2, z2, nx2, ny2, nz2, r, g, b, a, light);
+                    vertexIndex += 3;
+                }
             }
         }
     }
 
-    private void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float nx, float ny, float nz, float r, float g, float b, float a, int light)
+    private RenderType getCachedSolidType()
     {
-        consumer.addVertex(pose.pose(), x, y, z)
-            .setColor(r, g, b, a)
-            .setUv(0, 0)
-            .setOverlay(OverlayTexture.NO_OVERLAY)
-            .setLight(light)
-            .setNormal(pose, nx, ny, nz);
+        if (cachedSolidType == null) cachedSolidType = RenderType.entitySolid(getTextureLocation(null));
+        return cachedSolidType;
     }
 
-    private RenderType createSolidRenderType()
-    {
-        return RenderType.entitySolid(getTextureLocation(null));
-    }
-
-    private RenderType createEmissiveRenderType() {
-        return RenderType.entityTranslucentEmissive(getTextureLocation(null));
+    private RenderType getCachedEmissiveType() {
+        if (cachedEmissiveType == null) cachedEmissiveType = RenderType.entityTranslucentEmissive(getTextureLocation(null));
+        return cachedEmissiveType;
     }
 
     @Override
     public ResourceLocation getTextureLocation(BlackHoleEntity entity)
     {
         return ResourceLocation.withDefaultNamespace("textures/block/white_concrete.png");
+    }
+
+    private static final class SphereGeometry {
+        final int segments;
+        final float[] positions;
+        final float[] normals;
+
+        SphereGeometry(int segments)
+        {
+            this.segments = segments;
+
+            final int vertexCount = (segments + 1) * segments * 2;
+            this.positions = new float[vertexCount * 3];
+            this.normals = new float[vertexCount * 3];
+
+            int idx = 0;
+            for (int lat = 0; lat < segments; lat++)
+            {
+                final float theta1 = lat * (float) Math.PI / segments;
+                final float theta2 = (lat + 1) * (float) Math.PI / segments;
+
+                final float sinTheta1 = (float) Math.sin(theta1);
+                final float cosTheta1 = (float) Math.cos(theta1);
+                final float sinTheta2 = (float) Math.sin(theta2);
+                final float cosTheta2 = (float) Math.cos(theta2);
+
+                for (int lon = 0; lon <= segments; lon++)
+                {
+                    final float phi = lon * 2.0f * (float) Math.PI / segments;
+                    final float sinPhi = (float) Math.sin(phi);
+                    final float cosPhi = (float) Math.cos(phi);
+
+                    {
+                        final float nx = sinTheta1 * cosPhi;
+                        final float ny = cosTheta1;
+                        final float nz = sinTheta1 * sinPhi;
+
+                        positions[idx] = nx;
+                        positions[idx + 1] = ny;
+                        positions[idx + 2] = nz;
+                        normals[idx] = nx;
+                        normals[idx + 1] = ny;
+                        normals[idx + 2] = nz;
+                        idx += 3;
+                    }
+
+                    {
+                        final float nx = sinTheta2 * cosPhi;
+                        final float ny = cosTheta2;
+                        final float nz = sinTheta2 * sinPhi;
+
+                        positions[idx] = nx;
+                        positions[idx + 1] = ny;
+                        positions[idx + 2] = nz;
+                        normals[idx] = nx;
+                        normals[idx + 1] = ny;
+                        normals[idx + 2] = nz;
+                        idx += 3;
+                    }
+                }
+            }
+        }
     }
 }
