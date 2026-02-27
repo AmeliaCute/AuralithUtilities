@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "auralithutilities:item/seeds/titanium_hot_seeds"
+    "layer0": "auralithcore:item/seeds/titanium_hot_seeds"
   }
 }

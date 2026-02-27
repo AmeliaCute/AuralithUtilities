@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "auralithutilities:item/seeds/manganese_dust_seeds"
+    "layer0": "auralithcore:item/seeds/manganese_dust_seeds"
   }
 }

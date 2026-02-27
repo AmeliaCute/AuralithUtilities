@@ -1,0 +1,92 @@
+[
+  {
+    "metal":     "iron",
+    "raw_items": ["minecraft:raw_iron"],
+    "crushed":   "create:crushed_raw_iron",
+    "xp":        0.7
+  },
+  {
+    "metal":     "copper",
+    "raw_items": ["minecraft:raw_copper"],
+    "crushed":   "create:crushed_raw_copper",
+    "xp":        0.4
+  },
+  {
+    "metal":     "gold",
+    "raw_items": ["minecraft:raw_gold"],
+    "crushed":   "create:crushed_raw_gold",
+    "xp":        0.7
+  },
+  {
+    "metal":     "osmium",
+    "raw_items": ["mekanism:raw_osmium"],
+    "crushed":   "create:crushed_raw_osmium",
+    "xp":        1.2
+  },
+  {
+    "metal":     "tin",
+    "raw_items": ["modern_industrialization:raw_tin"],
+    "crushed":   "create:crushed_raw_tin",
+    "xp":        0.9
+  },
+  {
+    "metal":     "lead",
+    "raw_items": ["modern_industrialization:raw_lead"],
+    "crushed":   "create:crushed_raw_lead",
+    "xp":        0.9
+  },
+  {
+    "metal":     "uranium",
+    "raw_items": ["mekanism:raw_uranium", "modern_industrialization:raw_uranium"],
+    "crushed":   "create:crushed_raw_uranium",
+    "xp":        3.4
+  },
+  {
+    "metal":     "zinc",
+    "raw_items": ["create:raw_zinc"],
+    "crushed":   "create:crushed_raw_zinc"
+  },
+  {
+    "metal":     "antimony",
+    "raw_items": ["modern_industrialization:raw_antimony"],
+    "crushed":   "auralithcore:crushed_antimony",
+    "xp":        1.2
+  },
+  {
+    "metal":     "iridium",
+    "raw_items": ["modern_industrialization:raw_iridium"],
+    "crushed":   "auralithcore:crushed_iridium",
+    "xp":        1.2
+  },
+  {
+    "metal":     "nickel",
+    "raw_items": ["modern_industrialization:raw_nickel"],
+    "crushed":   "create:crushed_raw_nickel",
+    "xp":        1.4
+  },
+  {
+    "metal":     "platinum",
+    "raw_items": ["modern_industrialization:raw_platinum"],
+    "crushed":   "create:crushed_raw_platinum",
+    "xp":        0.7
+  },
+  {
+    "metal":     "silver",
+    "raw_items": ["modern_industrialization:raw_silver"],
+    "crushed":   "auralithcore:crushed_silver",
+    "xp":        0.2
+  },
+  {
+    "metal":     "titanium",
+    "raw_items": ["modern_industrialization:raw_titanium"],
+    "crushed":   "auralithcore:crushed_titanium",
+    "xp":        0.7
+  },
+  {
+    "metal":     "tungsten",
+    "raw_items": ["modern_industrialization:raw_tungsten"],
+    "crushed":   "auralithcore:crushed_tungsten",
+    "xp":        1.6
+  }
+
+]

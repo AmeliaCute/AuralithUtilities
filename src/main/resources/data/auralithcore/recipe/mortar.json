@@ -1,0 +1,16 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    "A A",
+    " A "
+  ],
+  "key": {
+    "A": {
+        "tag": "minecraft:base_stone_overworld"
+    }
+  },
+  "result": {
+    "id": "auralithcore:mortar",
+    "count": 1
+  }
+}
