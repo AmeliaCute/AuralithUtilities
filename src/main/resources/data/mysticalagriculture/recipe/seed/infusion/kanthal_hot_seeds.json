@@ -3,58 +3,58 @@
   "neoforge:conditions": [
     {
       "type": "mysticalagriculture:crop_enabled",
-      "crop": "auralithutilities:kanthal_hot"
+      "crop": "auralithcore:kanthal_hot"
     },
     {
       "type": "mysticalagriculture:crop_has_material",
-      "crop": "auralithutilities:kanthal_hot"
+      "crop": "auralithcore:kanthal_hot"
     }
   ],
   "input": {
     "type": "mysticalagriculture:crop_component",
     "component": "seed",
-    "crop": "auralithutilities:kanthal_hot"
+    "crop": "auralithcore:kanthal_hot"
   },
   "ingredients": [
     {
       "type": "mysticalagriculture:crop_component",
       "component": "material",
-      "crop": "auralithutilities:kanthal_hot"
+      "crop": "auralithcore:kanthal_hot"
     },
     {
       "type": "mysticalagriculture:crop_component",
       "component": "essence",
-      "crop": "auralithutilities:kanthal_hot"
+      "crop": "auralithcore:kanthal_hot"
     },
     {
       "type": "mysticalagriculture:crop_component",
       "component": "material",
-      "crop": "auralithutilities:kanthal_hot"
+      "crop": "auralithcore:kanthal_hot"
     },
     {
       "type": "mysticalagriculture:crop_component",
       "component": "essence",
-      "crop": "auralithutilities:kanthal_hot"
+      "crop": "auralithcore:kanthal_hot"
     },
     {
       "type": "mysticalagriculture:crop_component",
       "component": "material",
-      "crop": "auralithutilities:kanthal_hot"
+      "crop": "auralithcore:kanthal_hot"
     },
     {
       "type": "mysticalagriculture:crop_component",
       "component": "essence",
-      "crop": "auralithutilities:kanthal_hot"
+      "crop": "auralithcore:kanthal_hot"
     },
     {
       "type": "mysticalagriculture:crop_component",
       "component": "material",
-      "crop": "auralithutilities:kanthal_hot"
+      "crop": "auralithcore:kanthal_hot"
     },
     {
       "type": "mysticalagriculture:crop_component",
       "component": "essence",
-      "crop": "auralithutilities:kanthal_hot"
+      "crop": "auralithcore:kanthal_hot"
     }
   ],
   "result": {

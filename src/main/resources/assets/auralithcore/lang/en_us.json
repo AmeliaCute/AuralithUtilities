@@ -1,0 +1,25 @@
+{
+  "crop.auralithcore.antimony": "Antimony",
+  "crop.auralithcore.chromium_hot": "Chromium hot",
+  "crop.auralithcore.kanthal_hot": "Kanthal hot",
+  "crop.auralithcore.manganese_dust": "Manganese dust",
+  "crop.auralithcore.superconductor_hot": "Superconductor hot",
+  "crop.auralithcore.titanium_hot": "Titanium hot",
+  "crop.auralithcore.tungsten": "Tungsten",
+
+  "item.auralithcore.antimony_essence": "Antimony Essence",
+  "item.auralithcore.chromium_hot_essence": "Chromium Hot Essence",
+  "item.auralithcore.kanthal_hot_essence": "Kanthal Hot Essence",
+  "item.auralithcore.manganese_dust_essence": "Manganese Dust Essence",
+  "item.auralithcore.superconductor_hot_essence": "Superconductor Hot Essence",
+  "item.auralithcore.titanium_hot_essence": "Titanium Hot Essence",
+  "item.auralithcore.tungsten_essence": "Tungsten Essence",
+
+  "item.auralithcore.antimony_seeds": "Antimony Seeds",
+  "item.auralithcore.chromium_hot_seeds": "Chromium Hot Seeds",
+  "item.auralithcore.kanthal_hot_seeds": "Kanthal Hot Seeds",
+  "item.auralithcore.manganese_dust_seeds": "Manganese Dust Seeds",
+  "item.auralithcore.superconductor_hot_seeds": "Superconductor Hot Seeds",
+  "item.auralithcore.titanium_hot_seeds": "Titanium Hot Seeds",
+  "item.auralithcore.tungsten_seeds": "Tungsten Seeds"
+}

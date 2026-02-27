@@ -3,6 +3,8 @@ plugins {
     id 'maven-publish'
     id 'net.neoforged.moddev' version '2.0.115'
     id 'idea'
+
+    id 'org.sinytra.adapter.userdev' version '1.2.1-SNAPSHOT'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -27,6 +29,18 @@ repositories {
         }
     }
 
+    maven {
+        url = "https://api.modrinth.com/maven"
+    }
+
+    maven {
+        url = "https://squiddev.cc/maven"
+    }
+
+    maven {
+        name = "Sinytra"
+        url = "https://maven.sinytra.org/"
+    }
 }
 
 base {
@@ -125,6 +139,9 @@ dependencies {
 
     runtimeOnly    "net.darkhax.botanypots:botanypots-neoforge-${minecraft_version}:${botanypot_version}"
     runtimeOnly    "net.darkhax.botanypotsmystical:botanypotsmystical-neoforge-${minecraft_version}:${botanypotmystical_version}"
+
+    additionalRuntimeClasspath "org.sinytra:connector:2.0.0-beta.9+1.21.1"
+    runtimeOnly     "org.sinytra.forgified-fabric-api:forgified-fabric-api:0.115.6+2.1.4+1.21.1"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

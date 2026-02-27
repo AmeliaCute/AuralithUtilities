@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "auralithutilities:item/essence/titanium_hot_essence"
+    "layer0": "auralithcore:item/essence/titanium_hot_essence"
   }
 }

@@ -1,0 +1,23 @@
+{
+  "type": "crafting_shaped",
+  "neoforge:conditions": [
+    {
+      "type": "mysticalagriculture:crop_enabled",
+      "crop": "auralithcore:antimony"
+    }
+  ],
+  "pattern": [
+    "AAA",
+    "A A",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "mysticalagriculture:antimony_essence"
+    }
+  },
+  "result": {
+    "id": "modern_industrialization:antimony_ingot",
+    "count": 6
+  }
+}

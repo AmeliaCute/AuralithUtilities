@@ -1,0 +1,11 @@
+{
+  "type": "modern_industrialization:matter_transformer",
+  "eu": 24,
+  "duration": 200,
+  "item_inputs": [
+    { "item": "mysticalagriculture:bronze_essence", "count": 1 }
+  ],
+  "item_outputs": [
+    { "item": "modern_industrialization:bronze_ingot", "count": 2 }
+  ]
+}

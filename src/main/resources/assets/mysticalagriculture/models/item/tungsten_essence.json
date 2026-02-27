@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "auralithutilities:item/essence/tungsten_essence"
+    "layer0": "auralithcore:item/essence/tungsten_essence"
   }
 }

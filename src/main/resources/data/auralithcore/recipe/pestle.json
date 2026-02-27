@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "T",
+    "T"
+  ],
+  "key": {
+    "S": { "tag": "minecraft:stone_crafting_materials" },
+    "T": { "item": "minecraft:stick" }
+  },
+  "result": {
+    "id": "auralithcore:pestle",
+    "count": 1
+  }
+}
