@@ -54,7 +54,7 @@ jobs:
             neoforge
 
           files: |
-            build/libs/*-REL.jar
+            build/libs/auralithcore-*.jar
 
           retry-attempts: 2
           retry-delay: 10000
