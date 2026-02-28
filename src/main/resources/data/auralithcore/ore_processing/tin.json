@@ -1,0 +1,6 @@
+{
+  "metal":     "tin",
+  "raw_items": ["modern_industrialization:raw_tin"],
+  "crushed":   "create:crushed_raw_tin",
+  "xp":        0.9
+}

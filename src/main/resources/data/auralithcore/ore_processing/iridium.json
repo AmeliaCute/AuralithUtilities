@@ -1,0 +1,6 @@
+{
+  "metal":     "iridium",
+  "raw_items": ["modern_industrialization:raw_iridium"],
+  "crushed":   "auralithcore:crushed_iridium",
+  "xp":        1.2
+}

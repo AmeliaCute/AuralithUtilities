@@ -1,0 +1,6 @@
+{
+  "metal":     "gold",
+  "raw_items": ["minecraft:raw_gold"],
+  "crushed":   "create:crushed_raw_gold",
+  "xp":        0.7
+}
