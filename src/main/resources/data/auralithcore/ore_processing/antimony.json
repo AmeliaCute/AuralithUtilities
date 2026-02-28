@@ -1,0 +1,6 @@
+{
+  "metal":     "antimony",
+  "raw_items": ["modern_industrialization:raw_antimony"],
+  "crushed":   "auralithcore:crushed_antimony",
+  "xp":        1.2
+}

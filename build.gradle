@@ -41,6 +41,9 @@ repositories {
         name = "Sinytra"
         url = "https://maven.sinytra.org/"
     }
+
+    maven { url = "https://maven.createmod.net" }
+    maven { url = "https://maven.ithundxr.dev/snapshots" }
 }
 
 base {
@@ -142,6 +145,13 @@ dependencies {
 
     additionalRuntimeClasspath "org.sinytra:connector:2.0.0-beta.9+1.21.1"
     runtimeOnly     "org.sinytra.forgified-fabric-api:forgified-fabric-api:0.115.6+2.1.4+1.21.1"
+
+    runtimeOnly("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
+    runtimeOnly("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
+    runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
+    runtimeOnly("com.tterrag.registrate:Registrate:${registrate_version}")
+
+    runtimeOnly("mekanism:Mekanism:1.21.1-10.7.17.83")
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
