@@ -1,0 +1,6 @@
+{
+  "metal":     "platinum",
+  "raw_items": ["modern_industrialization:raw_platinum"],
+  "crushed":   "create:crushed_raw_platinum",
+  "xp":        0.7
+}

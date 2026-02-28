@@ -1,0 +1,6 @@
+{
+  "metal":     "osmium",
+  "raw_items": ["mekanism:raw_osmium"],
+  "crushed":   "create:crushed_raw_osmium",
+  "xp":        1.2
+}

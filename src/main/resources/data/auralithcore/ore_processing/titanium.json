@@ -1,0 +1,6 @@
+{
+  "metal":     "titanium",
+  "raw_items": ["modern_industrialization:raw_titanium"],
+  "crushed":   "auralithcore:crushed_titanium",
+  "xp":        0.7
+}
