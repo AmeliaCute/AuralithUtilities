@@ -1,0 +1,6 @@
+{
+  "metal":     "zinc",
+  "raw_items": ["create:raw_zinc"],
+  "crushed":   "create:crushed_raw_zinc",
+  "xp":        0.5
+}

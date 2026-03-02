@@ -45,7 +45,7 @@ jobs:
           modrinth-id: jx0u7UEL
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
-          version: auralith-core-${{ steps.commit.outputs.sha }}-${{ steps.version.outputs.version }}
+          version: auralith-core-${{ env.TAG_NAME }}
           version-type: release
 
           game-versions: 1.21.1

@@ -5,8 +5,7 @@ import gg.amecute.auralithutilities.Config.ClientConfig;
 import gg.amecute.auralithutilities.Config.CommonConfig;
 import gg.amecute.auralithutilities.Event.MainMenuReplacer;
 import gg.amecute.auralithutilities.Multiblock.Data.MultiblockStructureManager;
-import gg.amecute.auralithutilities.OreProcessing.DynamicItems;
-import gg.amecute.auralithutilities.OreProcessing.OreProcessingRegistry;
+import gg.amecute.auralithutilities.OreProcessing.OreProcessingManager;
 import gg.amecute.auralithutilities.Registries.AuralithBlockEntities;
 import gg.amecute.auralithutilities.Registries.AuralithEntities;
 import gg.amecute.auralithutilities.Registries.AuralithItems;
@@ -32,7 +31,7 @@ public class AuralithUtilities {
     public static final Logger LOGGER = LoggerFactory.getLogger(AuralithUtilities.class);
     public static final String MODID = "auralithcore";
 
-    public AuralithUtilities(IEventBus modEventBus, ModContainer modContainer) 
+    public AuralithUtilities(IEventBus modEventBus, ModContainer modContainer)
     {
       modEventBus.addListener(this::commonSetup);
 
@@ -43,10 +42,8 @@ public class AuralithUtilities {
 
       AuralithRecipeType.register();
       AuralithEntities.ENTITY_TYPE.register(modEventBus);
-      AuralithItems.ITEMS.register(modEventBus);
 
-      LOGGER.info("[OreProcessing] Loaded {} metal definitions.", OreProcessingRegistry.size());
-      DynamicItems.ITEMS.register(modEventBus);
+      AuralithItems.ITEMS.register(modEventBus);
 
       AuralithMachines.BLOCKS.register(modEventBus);
       AuralithMachines.MACHINE_ITEMS.register(modEventBus);
@@ -60,37 +57,39 @@ public class AuralithUtilities {
       modContainer.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
     }
 
-    private void commonSetup(FMLCommonSetupEvent event) { }
+    private void commonSetup(FMLCommonSetupEvent event) {}
 
-    private void onServerStarting(ServerStartingEvent event) { }
+    private void onServerStarting(ServerStartingEvent event) {}
 
-    public static void onAddReloadListener(AddReloadListenerEvent event) 
+    public static void onAddReloadListener(AddReloadListenerEvent event)
     {
-      MultiblockStructureManager manager = new MultiblockStructureManager();
-      setStructureManager(manager);
-      event.addListener(manager);
-      AuralithUtilities.LOGGER.info("Registered MultiblockStructureManager");
+      MultiblockStructureManager structureMgr = new MultiblockStructureManager();
+      setStructureManager(structureMgr);
+      event.addListener(structureMgr);
+      LOGGER.info("[Auralith] Registered MultiblockStructureManager reload listener.");
+
+      event.addListener(new OreProcessingManager());
+      LOGGER.info("[Auralith] Registered OreProcessingManager reload listener.");
     }
 
-    public static void onRegisterCommands(RegisterCommandsEvent event) 
+    public static void onRegisterCommands(RegisterCommandsEvent event)
     {
       MultiblockCommands.register(event.getDispatcher());
-      AuralithUtilities.LOGGER.info("Registered multiblock commands");
+      LOGGER.info("[Auralith] Registered multiblock commands.");
     }
 
-    public static ResourceLocation resGet(String path) 
+    public static ResourceLocation resGet(String path)
     {
       return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
-    private void preloadStructures() 
+    private void preloadStructures()
     {
-        try 
-        {
-          MultiblockStructureManager manager = new MultiblockStructureManager();
-          setStructureManager(manager);
-        } 
-        catch (Exception ignored) { }
+      try 
+      {
+        MultiblockStructureManager manager = new MultiblockStructureManager();
+        setStructureManager(manager);
+      } catch (Exception ignored) {}
     }
 
     public static MultiblockStructureManager getStructureManager() { return structureManager; }

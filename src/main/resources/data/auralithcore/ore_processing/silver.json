@@ -1,0 +1,6 @@
+{
+  "metal":     "silver",
+  "raw_items": ["modern_industrialization:raw_silver"],
+  "crushed":   "auralithcore:crushed_silver",
+  "xp":        0.2
+}

@@ -1,0 +1,6 @@
+{
+  "metal":     "uranium",
+  "raw_items": ["mekanism:raw_uranium", "modern_industrialization:raw_uranium"],
+  "crushed":   "create:crushed_raw_uranium",
+  "xp":        3.4
+}

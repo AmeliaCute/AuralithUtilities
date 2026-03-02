@@ -1,0 +1,6 @@
+{
+  "metal":     "tungsten",
+  "raw_items": ["modern_industrialization:raw_tungsten"],
+  "crushed":   "auralithcore:crushed_tungsten",
+  "xp":        1.6
+}

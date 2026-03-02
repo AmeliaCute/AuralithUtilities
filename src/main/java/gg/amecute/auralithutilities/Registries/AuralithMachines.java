@@ -38,8 +38,7 @@ public class AuralithMachines {
           new MortarBlock(BlockBehaviour.Properties.of()
               .sound(SoundType.STONE)
               .strength(1.5f, 6.0f)
-              .requiresCorrectToolForDrops()
-              .noOcclusion()   // custom shape, don't occlude neighbours
+              .noOcclusion()
           ));
 
   public static final DeferredRegister<Item> MACHINE_ITEMS =

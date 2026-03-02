@@ -1,0 +1,6 @@
+{
+  "metal":     "nickel",
+  "raw_items": ["modern_industrialization:raw_nickel"],
+  "crushed":   "create:crushed_raw_nickel",
+  "xp":        1.4
+}
