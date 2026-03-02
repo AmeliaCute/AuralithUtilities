@@ -1,0 +1,9 @@
+{
+  "metal":     "lead",
+  "raw_items": [
+    "modern_industrialization:raw_lead",
+    "mekanism:raw_lead"
+  ],
+  "crushed":   "create:crushed_raw_lead",
+  "xp":        0.9
+}
