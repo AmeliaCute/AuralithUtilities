@@ -17,7 +17,7 @@
 
     public OreProcessingManager() 
     {
-      super(GSON, "ore_processing");
+      super(GSON, "mortar");
     }
 
     @Override

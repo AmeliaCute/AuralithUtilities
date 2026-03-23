@@ -47,3 +47,7 @@ config="${mod_id}.mixins.json"
     version="[${mysticalagradditions_version},)"
     ordering="BEFORE"
     side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "emi"
+    type = "optional"
