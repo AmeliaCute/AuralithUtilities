@@ -138,7 +138,7 @@ dependencies {
 
     implementation "aztech:Modern-Industrialization:${mi_version}"
 
-    runtimeOnly    "dev.emi:emi-neoforge:${emi_version}+${minecraft_version}"
+    implementation  "dev.emi:emi-neoforge:${emi_version}+${minecraft_version}"
 
     runtimeOnly    "net.darkhax.botanypots:botanypots-neoforge-${minecraft_version}:${botanypot_version}"
     runtimeOnly    "net.darkhax.botanypotsmystical:botanypotsmystical-neoforge-${minecraft_version}:${botanypotmystical_version}"
