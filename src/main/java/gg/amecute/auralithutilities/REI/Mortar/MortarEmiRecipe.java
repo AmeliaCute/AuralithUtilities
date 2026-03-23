@@ -22,10 +22,10 @@ public class MortarEmiRecipe implements EmiRecipe {
   private final List<EmiStack> outputs;
   private final OreProcessingEntry entry;
 
-  public MortarEmiRecipe(OreProcessingEntry entry, String rawId, ItemStack rawStack, ItemStack crushedStack)
+  public MortarEmiRecipe(OreProcessingEntry entry, String metalId, ItemStack rawStack, ItemStack crushedStack)
   {
     this.entry = entry;
-    this.id = ResourceLocation.fromNamespaceAndPath(AuralithUtilities.MODID, "mortar/"+rawId.replace(':', '_'));
+    this.id = ResourceLocation.fromNamespaceAndPath(AuralithUtilities.MODID, "/mortar/"+metalId);
     this.inputs = List.of(
         EmiIngredient.of(List.of(EmiStack.of(rawStack))),
         EmiIngredient.of(List.of(EmiStack.of(new ItemStack(AuralithItems.PESTLE.get()))))

@@ -44,7 +44,7 @@ public class MortarEmiPlugin implements EmiPlugin
       var crushedItem = BuiltInRegistries.ITEM.getOptional(crushedRl);
       if(crushedItem.isEmpty()) continue;
 
-      registry.addRecipe((new MortarEmiRecipe(entry, rawId, new ItemStack(rawItem.get()), new ItemStack(crushedItem.get(), 2))));
+      registry.addRecipe(new MortarEmiRecipe(entry, entry.metal(), new ItemStack(rawItem.get()), new ItemStack(crushedItem.get(), 2)));
     }
   }
 }
