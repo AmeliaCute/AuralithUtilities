@@ -1,14 +1,21 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "crafting_shaped",
+  "neoforge:conditions": [
+    {
+      "type": "mysticalagriculture:crop_enabled",
+      "crop": "auralithcore:antimony_dust"
+    }
+  ],
   "pattern": [
-    "S S",
-    "SSS"
+    "AAA"
   ],
   "key": {
-    "S": { "tag": "minecraft:stone_crafting_materials" }
+    "A": {
+      "item": "mysticalagriculture:antimony_dust_essence"
+    }
   },
   "result": {
-    "id": "auralithcore:mortar",
-    "count": 1
+    "id": "modern_industrialization:antimony_dust",
+    "count": 3
   }
 }

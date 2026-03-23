@@ -21,5 +21,11 @@
   "item.auralithcore.manganese_dust_seeds": "Manganese Dust Seeds",
   "item.auralithcore.superconductor_hot_seeds": "Superconductor Hot Seeds",
   "item.auralithcore.titanium_hot_seeds": "Titanium Hot Seeds",
-  "item.auralithcore.tungsten_seeds": "Tungsten Seeds"
+  "item.auralithcore.tungsten_seeds": "Tungsten Seeds",
+
+  "item.auralithcore.pestle": "Pestle",
+
+  "block.auralithcore.mortar": "Mortar",
+
+  "emi.category.auralithcore.mortar": "Crushing"
 }
